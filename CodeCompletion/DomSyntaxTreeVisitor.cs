@@ -97,6 +97,21 @@ namespace CodeCompletion
 
         private type_definition BuildSyntaxNodeForTypeReference(type_node tn)
         {
+            if (tn is common_type_node anonymousType &&
+                anonymousType.PrintableName.StartsWith("AnonymousType#", StringComparison.Ordinal))
+            {
+                var scope = new TypeScope(SymbolKind.Class, cur_scope, null);
+                scope.loc = get_location(anonymousType.location);
+                scope.si = new SymInfo("class", SymbolKind.Class, "");
+                foreach (var property in anonymousType.properties)
+                {
+                    BuildSyntaxNodeForTypeReference(property.property_type).visit(this);
+                    var member = new ElementScope(new SymInfo(property.name, SymbolKind.Property, ""),
+                        returned_scope, scope);
+                    scope.AddName(property.name, member);
+                }
+                return new semantic_type_node(scope);
+            }
             if (tn.instance_params != null && tn.instance_params.Count > 0)
             {
                 var ttr = new template_type_reference();
@@ -114,30 +129,7 @@ namespace CodeCompletion
                         var id = new ident_with_templateparams();
                         ntr.Add(new ident(s));
                         foreach (var gen_td in tn.instance_params)
-                        {
-                            if (gen_td.PrintableName.StartsWith("AnonymousType#"))
-                            {
-                                SymScope tmp = cur_scope;
-                                TypeScope ts = null;
-                                cur_scope = ts = new TypeScope(SymbolKind.Class, cur_scope, null);
-                                tmp.AddName(gen_td.PrintableName, cur_scope);
-                                ts.loc = get_location(gen_td.location);
-                                ts.si = new SymInfo("class", SymbolKind.Class, "");
-                                foreach (var prop in (gen_td as common_type_node).properties)
-                                {
-                                    ElementScope es = new ElementScope();
-                                    es.si = new SymInfo(prop.name, SymbolKind.Property, "");
-                                    BuildSyntaxNodeForTypeReference(prop.property_type).visit(this);
-                                    es.sc = returned_scope;
-                                    ts.AddName(prop.name, es);
-                                }
-                                returned_scope = cur_scope;
-                                cur_scope = tmp;
-                                ttr.params_list.Add(new named_type_reference(gen_td.PrintableName));
-                            }
-                            else
-                                ttr.params_list.Add(BuildSyntaxNodeForTypeReference(gen_td));
-                        }
+                            ttr.params_list.Add(BuildSyntaxNodeForTypeReference(gen_td));
                             
                     }
                 }
@@ -252,23 +244,26 @@ namespace CodeCompletion
                     return ts;
                 if (ts is FileScope && tn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.binary_file)
                     return ts;
-                var ntr = BuildSyntaxNodeForTypeReference(tn);
+                var previousScope = cur_scope;
                 cur_scope = topScope;
-                
-                ntr.visit(this);
-                if (returned_scope != null && returned_scope is TypeScope)
+                try
                 {
-                    var correctedType = returned_scope as TypeScope;
-                    if (!correctedType.IsTypeStrictEqual(ts))
+                    // Resolve property and generic type references in the variable's scope.
+                    BuildSyntaxNodeForTypeReference(tn).visit(this);
+                    if (returned_scope is TypeScope correctedType && !correctedType.IsTypeStrictEqual(ts))
                         return correctedType;
+                    if (returned_scope is ProcScope proc)
+                    {
+                        var procType = new ProcType(proc);
+                        if (!procType.IsEqual(ts))
+                            return procType;
+                    }
+                    return ts;
                 }
-                else if (returned_scope != null && returned_scope is ProcScope)
+                finally
                 {
-                    var procType = new ProcType(returned_scope as ProcScope);
-                    if (!procType.IsEqual(ts))
-                        return procType;
+                    cur_scope = previousScope;
                 }
-                return ts;
             }
         }
 
@@ -325,6 +320,21 @@ namespace CodeCompletion
             co.ForIntellisense = true;
             co.SaveDocumentation = false;
             //if (compiler == null)
+#if PABCNET_MODERN
+            var semanticCompiler = new Compiler(CodeCompletionController.comp?.SourceFilesProvider, null);
+            semanticCompiler.CompilerOptions = co;
+            semanticCompiler.ClearAfterCompilation = false;
+            try
+            {
+                semanticCompiler.Compile();
+                foreach (var variable in semanticCompiler.CompiledVariables)
+                    CorrectVariableType(variable);
+            }
+            finally
+            {
+                semanticCompiler.ClearAll();
+            }
+#else
                 compiler = new Compiler();
             compiler.CompilerOptions = co;
             compiler.ClearAfterCompilation = false;
@@ -333,6 +343,7 @@ namespace CodeCompletion
                 CorrectVariableType(lv);
             
             compiler.ClearAll(/*false*/);
+#endif
         }
 
 		public SymScope FindScopeByLocation(int line, int col)
@@ -6064,6 +6075,8 @@ namespace CodeCompletion
         }
         public override void visit(semantic_type_node stn) // SSM 
         {
+            if (stn.type is TypeScope scope)
+                returned_scope = scope;
         }
         public override void visit(sequence_type _sequence_type)
         {

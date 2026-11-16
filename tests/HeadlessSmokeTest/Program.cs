@@ -171,6 +171,21 @@ Check(
     signatureTask.Result?.Signatures.Any(signature => signature.Parameters.Count > 0) == true,
     "LanguageServices signature help contains parameters");
 
+var anonymousFile = Path.Combine(Path.GetTempPath(), $"SemanticHover_{Guid.NewGuid():N}.pas");
+var anonymousId = new Uri(anonymousFile).AbsoluteUri;
+const string anonymousSource = """
+###
+var a := (1..18).Sel(i -> new class(f := i, g := i.ToS));
+Writeln(a.First.g);
+""";
+var anonymousAnalysis = await languageService.OpenOrUpdateDocumentAsync(
+    anonymousId, anonymousFile, anonymousSource, version: 1);
+Check(anonymousAnalysis.IsCompiled, "Unsaved anonymous-class document is analyzed");
+var anonymousHover = await languageService.GetHoverAsync(
+    anonymousId, anonymousSource.IndexOf("a :=", StringComparison.Ordinal));
+Check(anonymousHover?.Contents.Contains("sequence of class", StringComparison.OrdinalIgnoreCase) == true,
+    "Semantic hover infers a sequence of anonymous classes from the unsaved document");
+
 const string printDocumentId = "file:///PrintSignature.pas";
 const string printSource = """
 begin

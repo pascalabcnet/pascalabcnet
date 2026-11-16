@@ -638,8 +638,14 @@ public sealed class PascalLanguageService : IPascalLanguageService
                     }
                 return previousProvider(file, operation);
             };
+            var previousSemanticMode = DomSyntaxTreeVisitor.use_semantic_for_intellisense;
+            DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
             try { return action(); }
-            finally { compiler.SourceFilesProvider = previousProvider; }
+            finally
+            {
+                DomSyntaxTreeVisitor.use_semantic_for_intellisense = previousSemanticMode;
+                compiler.SourceFilesProvider = previousProvider;
+            }
         }
         finally
         {
