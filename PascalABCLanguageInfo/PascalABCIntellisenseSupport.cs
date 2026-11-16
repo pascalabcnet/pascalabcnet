@@ -1321,8 +1321,26 @@ namespace Languages.Pascal.Frontend.Data
                                             end = true;
                                         else
                                         {
-                                            sb.Insert(0, ch);
-                                            i = comment_position;
+                                            int beforeComment = comment_position - 1;
+                                            while (beforeComment >= 0 && (Text[beforeComment] == ' ' || Text[beforeComment] == '\t'))
+                                                beforeComment--;
+                                            int startOfSuffix = 0;
+                                            while (startOfSuffix < sb.Length && char.IsWhiteSpace(sb[startOfSuffix]))
+                                                startOfSuffix++;
+                                            // Continue across a line comment only within a nested expression
+                                            // or when the member-access operator joins the two lines.
+                                            bool continuesMemberAccess =
+                                                (beforeComment >= 0 && Text[beforeComment] == '.') ||
+                                                (startOfSuffix < sb.Length && (sb[startOfSuffix] == '.' ||
+                                                    (sb[startOfSuffix] == '?' && startOfSuffix + 1 < sb.Length &&
+                                                        sb[startOfSuffix + 1] == '.')));
+                                            if (tokens.Count == 0 && ugl_skobki.Count == 0 && kav.Count == 0 && !continuesMemberAccess)
+                                                end = true;
+                                            else
+                                            {
+                                                sb.Insert(0, ch);
+                                                i = comment_position;
+                                            }
                                         }
 
                                     }

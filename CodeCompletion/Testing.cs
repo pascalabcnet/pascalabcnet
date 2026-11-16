@@ -514,6 +514,17 @@ namespace CodeCompletion
     		off = test_str.Length;
     		s = languageIntellisenseSupport.FindExpression(off,test_str,line,col,out keyw);
     		assert(s.Trim('\n',' ','\t')=="test.abcd");
+            test_str = "test//abcd\r\ntest.abcd";
+            s = languageIntellisenseSupport.FindExpression(test_str.Length, test_str, line, col, out keyw);
+            assert(s.Trim() == "test.abcd", "CRLF after a line comment must not join two expressions");
+
+            test_str = "obj. // comment\nMember";
+            s = languageIntellisenseSupport.FindExpression(test_str.Length, test_str, line, col, out keyw);
+            assert(s.Replace(" ", "").Replace("\n", "") == "obj.Member", "Keep member access across a line comment");
+
+            test_str = "F(1, // comment\n2)";
+            s = languageIntellisenseSupport.FindExpression(test_str.Length, test_str, line, col, out keyw);
+            assert(s.Replace(" ", "").Replace("\n", "") == "F(1,2)", "Keep a multiline call across a line comment");
     		
     		test_str = "test(2,3) < ppp";
     		off = test_str.Length;
