@@ -2605,6 +2605,8 @@ namespace CodeCompletion
             AddNetCoreSystemReferences(unit_scope, namespaces, _as,
                 PascalABCCompiler.NetHelper.NetCoreSystemReferences.AssemblyPaths);
             AddNetCorePlatformReferences(unit_scope, namespaces, _as, _unit_module.compiler_directives);
+#else
+            AddFrameworkCoreReferences(unit_scope);
 #endif
             this.cur_unit_file_name = _unit_module.file_name;
             //if (XmlDoc.LookupLocalizedXmlDocForUnitWithSources(_unit_module.file_name) != null)
@@ -3256,6 +3258,8 @@ namespace CodeCompletion
             AddNetCoreSystemReferences(unit_scope, namespaces, _as,
                 PascalABCCompiler.NetHelper.NetCoreSystemReferences.AssemblyPaths);
             AddNetCorePlatformReferences(unit_scope, namespaces, _as, _program_module.compiler_directives);
+#else
+            AddFrameworkCoreReferences(unit_scope);
 #endif
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
@@ -3473,6 +3477,27 @@ namespace CodeCompletion
                 _program_module.program_block.program_code.visit(this);
             }
         }
+
+#if PABCNET_LEGACY
+        private void AddFrameworkCoreReferences(InterfaceUnitScope unitScope)
+        {
+            if (currentUnitLanguage != Languages.Facade.LanguageProvider.Instance.MainLanguage)
+                return;
+            AddFrameworkReference(unitScope, typeof(Enumerable).Assembly);
+            string numericsPath = Compiler.get_assembly_path("System.Numerics.dll", true);
+            if (numericsPath != null)
+                AddFrameworkReference(unitScope, PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(numericsPath));
+        }
+
+        private static void AddFrameworkReference(InterfaceUnitScope unitScope, Assembly assembly)
+        {
+            if (assembly == null)
+                return;
+            PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assembly);
+            AssemblyDocCache.Load(assembly, assembly.Location);
+            unitScope.AddReferencedAssembly(assembly);
+        }
+#endif
 
 #if PABCNET_MODERN
         private static void AddNetCorePlatformReferences(InterfaceUnitScope unitScope,
@@ -4073,16 +4098,20 @@ namespace CodeCompletion
                         return good_procs[i].GetInstance(arg_types2);
             if (good_procs.Count == 0)
             {
-                for (int i = 0; i < meths.Length; i++)
+                // A lambda can still be incompatible with an open delegate type.
+                // In that case prefer an overload with the supplied argument count.
+                var sameArity = new List<ProcScope>();
+                foreach (var method in meths)
                 {
-                    if (meths[i] is ProcScope)
+                    if (obj != null && method is ProcScope proc && !proc.IsStatic)
                     {
-                        if (obj != null && !(meths[i] as ProcScope).IsStatic)
-                        {
-                            good_procs.Add(meths[i] as ProcScope);
-                        }
+                        good_procs.Add(proc);
+                        if (proc.parameters.Count == arg_types.Count + (proc.IsExtension ? 1 : 0))
+                            sameArity.Add(proc);
                     }
                 }
+                if (sameArity.Count != 0)
+                    good_procs = sameArity;
             }
             /*if (good_procs.Count == 0)
             {
@@ -4105,9 +4134,10 @@ namespace CodeCompletion
                     if (!obj_instanced && obj.GetElementType() != null && good_procs[0].IsExtension && !(good_procs[0].parameters[0].sc is TemplateParameterScope))
                         obj = obj.GetElementType();
                     arg_types2.Insert(0, obj);
-                    arg_types.Insert(0, obj);
+                    var argumentsWithReceiver = new List<SymScope> { obj };
+                    argumentsWithReceiver.AddRange(arg_types);
                     for (int i = 0; i < good_procs.Count; i++)
-                        if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
+                        if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, argumentsWithReceiver))
                             return good_procs[i].GetInstance(arg_types2);
                 }
                 
@@ -4194,7 +4224,7 @@ namespace CodeCompletion
                         disable_lambda_compilation = tmp_disable_lambda_compilation;
                         awaitedProcType = tmp_awaitedProcType;
                         has_lambda = true;
-                        param_types[obj == null ? i : i + 1] = returned_scope;
+                        param_types[i] = returned_scope;
                     }
                 }
             if (has_lambda)
@@ -4223,7 +4253,7 @@ namespace CodeCompletion
                 else
                     returned_scope = null;
             }
-            else if (names.Length > 0)
+            else
             {
                 returned_scope = null;
                 foreach (SymScope ss in names)

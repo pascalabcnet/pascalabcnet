@@ -519,6 +519,68 @@ try
             $"XElement-only extensions require an XElement receiver in fixture {id}");
     }
 
+    const string groupBySource = """
+    type Pupil = class
+      Grade: integer;
+    end;
+    function GetPupils: array of Pupil := nil;
+    begin
+      var pupils := GetPupils;
+      var groups := pupils.GroupBy(p -> p.Grade);
+      var first := groups.First;
+      foreach var g in groups do
+      begin
+        Print(g.Key);
+      end;
+      Print(first.Key);
+    end.
+    """;
+    const string groupByUri = "untitled:GroupByCompletion.pas";
+    await WriteDidOpenAsync(input, groupByUri, groupBySource, 1, timeout.Token);
+    foreach (var (id, receiver) in new[] { (337, "g."), (338, "first.") })
+    {
+        int offset = groupBySource.IndexOf(receiver, StringComparison.Ordinal) + receiver.Length;
+        await WriteRequestAsync(input, id, "textDocument/completion", groupByUri,
+            GetPosition(groupBySource, offset), timeout.Token);
+        using var completion = await ReadResponseAsync(output, id, timeout.Token);
+        var labels = GetCompletionLabels(completion);
+        Check(labels.Contains("Key") && !labels.Contains("Grade"),
+            $"GroupBy completion for {receiver} exposes the group key");
+    }
+    int groupByOffset = groupBySource.IndexOf("GroupBy", StringComparison.Ordinal) + 2;
+    await WriteRequestAsync(input, 339, "textDocument/hover", groupByUri,
+        GetPosition(groupBySource, groupByOffset), timeout.Token);
+    using var groupByHover = await ReadResponseAsync(output, 339, timeout.Token);
+    Check(groupByHover.RootElement.GetProperty("result").GetProperty("contents").GetProperty("value")
+        .GetString()?.Contains("GroupBy", StringComparison.OrdinalIgnoreCase) == true,
+        "hover describes GroupBy for an array of a Pascal class");
+
+    int lambdaCompletionId = 340;
+    const string customLambdaDeclaration = "procedure CheckPupil(tag: integer; predicate: Pupil -> boolean); begin end;\n";
+    foreach (var (method, declaration, call, suffix) in new[]
+    {
+        ("Where", "", "pupils.Where(", ");\nend."),
+        ("Select", "", "pupils.Select(", "\nend."),
+        ("GroupBy", "", "pupils.GroupBy(", ""),
+        ("OrderBy", "", "pupils.OrderBy(", "\nend."),
+        ("OrderByDescending", "", "pupils.OrderByDescending(", "\nend."),
+        ("Any", "", "pupils.Any(\n    ", ");\nend."),
+        ("CheckPupil", customLambdaDeclaration, "CheckPupil(1, ", ");\nend.")
+    })
+    {
+        var lambdaPrefix = groupBySource[..groupBySource.IndexOf("var groups", StringComparison.Ordinal)]
+            + $"{call}p -> p.";
+        lambdaPrefix = lambdaPrefix.Insert(lambdaPrefix.IndexOf("\nbegin", StringComparison.Ordinal) + 1, declaration);
+        var lambdaSource = lambdaPrefix + suffix;
+        var lambdaUri = $"untitled:Incomplete{method}Lambda.pas";
+        await WriteDidOpenAsync(input, lambdaUri, lambdaSource, 1, timeout.Token);
+        await WriteRequestAsync(input, lambdaCompletionId, "textDocument/completion", lambdaUri,
+            GetPosition(lambdaSource, lambdaPrefix.Length), timeout.Token);
+        using var completion = await ReadResponseAsync(output, lambdaCompletionId++, timeout.Token);
+        Check(GetCompletionLabels(completion).Contains("Grade"),
+            $"{method} completion infers the lambda parameter before the member is typed");
+    }
+
     const string arraySignatureSource = """
     begin
       var a := Arr(1,2,3,4,5,6);

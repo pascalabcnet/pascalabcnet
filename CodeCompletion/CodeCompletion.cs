@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.Errors;
@@ -113,6 +114,11 @@ namespace CodeCompletion
 
         // Session policy, independent of persistent user preferences and language selection.
         public static volatile bool LegacyAnalysisSuspended;
+
+        private static readonly Regex IncompleteLambdaArgument = new Regex(
+            @"[(,]\s*(?<parameter>[\p{L}_][\p{L}\p{Nd}_]*)\s*->\s*\k<parameter>\.(?!\.)" +
+            @"(?=\s*(?<suffix>[),;]|end[ \t]*[.;]|\z))",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         
         public DomConverter Compile(string FileName, string Text)
         {
@@ -129,6 +135,28 @@ namespace CodeCompletion
             try
             {
                 cu = currentLanguage.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, false);
+
+                if (cu == null && currentLanguage == LanguageProvider.MainLanguage)
+                {
+                    // Keep the member access inside the lambda so normal overload resolution
+                    // can infer the parameter type even before the member name is typed.
+                    string recoveryText = IncompleteLambdaArgument.Replace(Text, match =>
+                    {
+                        string suffix = match.Groups["suffix"].Value;
+                        string completedMember = match.Value + "pabcCompletionMember";
+                        if (suffix == ")" || suffix == ",")
+                            return completedMember;
+                        if (suffix == ";")
+                            return completedMember + ")";
+                        return completedMember + (suffix.Length == 0 ? ");\nend." : ");");
+                    });
+                    if (recoveryText != Text)
+                    {
+                        ErrorsList.Clear();
+                        Warnings.Clear();
+                        cu = currentLanguage.Parser.GetCompilationUnit(FileName, recoveryText, ErrorsList, Warnings, ParseMode.Normal, false);
+                    }
+                }
                 
                 ErrorsList.Clear();
 

@@ -401,7 +401,7 @@ namespace CodeCompletion
                                 t.IsEqual(tmp_ts2) || 
                                 (t is ArrayScope && tmp_ts2.IsArray && t.Rank == tmp_ts2.Rank) || 
                                 ( tmp_ts2 is ArrayScope && t.IsArray && tmp_ts2.Rank == t.Rank) || 
-                                (t is TemplateParameterScope || t is UnknownScope) ||
+                                t is TemplateParameterScope ||
                                 t is FileScope && tmp_ts2 is FileScope &&
                                 ((t as FileScope).elementType == null) == ((tmp_ts2 as FileScope).elementType == null)
                                 )
@@ -2521,6 +2521,11 @@ namespace CodeCompletion
 
         public ProcScope GetInstance(List<TypeScope> gen_args)
         {
+            if (this is CompiledMethodScope compiled && compiled.mi.DeclaringType == typeof(Enumerable) &&
+                compiled.mi.Name == nameof(Enumerable.GroupBy) && this.parameters.Count == 2 &&
+                gen_args.Count == 2 && gen_args[0] != null && gen_args[1] is ProcType selector)
+                return InstantiateGroupBy(gen_args[0], selector.target.return_type);
+
             List<string> template_parameters = this.template_parameters;
             if ((this.template_parameters == null || this.template_parameters.Count == 0))
             {
@@ -2653,10 +2658,44 @@ namespace CodeCompletion
                         }*/
                     }
                 }
-                instance.return_type = this.return_type.GetInstance(gen_args, exact);
+                if (this is CompiledMethodScope extension && IsExtension && gen_args.Count > 0 &&
+                    extension.mi.ReturnType.IsGenericParameter &&
+                    extension.mi.GetParameters().FirstOrDefault()?.ParameterType is Type receiver &&
+                    receiver.IsGenericType && receiver.GetGenericTypeDefinition() == typeof(IEnumerable<>) &&
+                    receiver.GetGenericArguments()[0] == extension.mi.ReturnType)
+                    instance.return_type = gen_args[0];
+                else
+                    instance.return_type = this.return_type.GetInstance(gen_args, exact);
             }
 
             return instance;
+        }
+
+        private ProcScope InstantiateGroupBy(TypeScope element, TypeScope key)
+        {
+            key = key ?? TypeTable.obj_type;
+            var source = TypeTable.get_compiled_type(typeof(IEnumerable<>)).GetInstance(
+                new List<TypeScope> { element }, exact: true);
+            var selector = TypeTable.get_compiled_type(typeof(Func<,>)).GetInstance(
+                new List<TypeScope> { element, key }, exact: true);
+            var grouping = TypeTable.get_compiled_type(typeof(IGrouping<,>)).GetInstance(
+                new List<TypeScope> { key, element }, exact: true);
+            grouping.elementType = element;
+            return new ProcScope(name, topScope, is_constructor)
+            {
+                is_extension = is_extension,
+                original_function = this,
+                loc = loc,
+                body_loc = body_loc,
+                si = si,
+                parameters = new List<ElementScope>
+                {
+                    new ElementScope(new SymInfo(parameters[0].si), source, parameters[0].topScope),
+                    new ElementScope(new SymInfo(parameters[1].si), selector, parameters[1].topScope)
+                },
+                return_type = TypeTable.get_compiled_type(typeof(IEnumerable<>)).GetInstance(
+                    new List<TypeScope> { grouping }, exact: true)
+            };
         }
 
         public virtual int GetParametersCount()
