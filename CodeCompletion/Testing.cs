@@ -17,6 +17,24 @@ namespace CodeCompletion
 	//#if (DEBUG)
     public class CodeCompletionTester
     {
+#if NETFRAMEWORK
+        [ThreadStatic]
+        private static List<string> reportedFailures;
+
+        public static string[] GetIntellisenseFailures(string dir)
+        {
+            var previous = reportedFailures;
+            var failures = new List<string>();
+            reportedFailures = failures;
+            try
+            {
+                Test();
+                TestIntellisense(dir);
+                return failures.ToArray();
+            }
+            finally { reportedFailures = previous; }
+        }
+#endif
     	
     	public static void Test()
     	{
@@ -40,6 +58,10 @@ namespace CodeCompletion
             {
                 var FileName = files[i];
 
+#if NETFRAMEWORK
+                try
+                {
+#endif
                 var content = File.ReadAllText(FileName);
                 var dc = controller.Compile(FileName, content);
                 
@@ -96,6 +118,13 @@ namespace CodeCompletion
                     tmp = tmp.Remove(ind, tmp.IndexOf(")}") + 2 - ind);
                     ind = tmp.IndexOf("{(");
                 }
+#if NETFRAMEWORK
+                }
+                catch (Exception error) when (reportedFailures != null)
+                {
+                    reportedFailures.Add(FileName + ": " + error.Message);
+                }
+#endif
             }
         }
 
@@ -285,13 +314,26 @@ namespace CodeCompletion
             return "";
         }
 
-        private static void assert(bool cond, string message=null)
+        private static void assert(bool cond, string message=null,
+            [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
     	{
+#if NETFRAMEWORK
+            if (cond) return;
+            message = message ?? ("Expression extraction assertion at Testing.cs:" + line);
+            if (reportedFailures != null)
+            {
+                reportedFailures.Add(message);
+                return;
+            }
+#endif
 #if DEBUG
             if (message != null)
     		    System.Diagnostics.Debug.Assert(cond, message);
             else
                 System.Diagnostics.Debug.Assert(cond);
+#elif NETFRAMEWORK
+            if (!cond)
+                throw new InvalidOperationException(message);
 #else
             //if (!cond)
             //    throw new Exception(message);

@@ -563,6 +563,20 @@ begin
     
     if (ParamCount = 2) and (ParamStr(2) = '1') then
       nogui := true;
+    if ParamStr(1) = '--intellisense' then
+    begin
+      nogui := true;
+      var dir := Path.Combine(TestSuiteDir, 'intellisense_tests');
+      if not Directory.Exists(dir) then
+        raise new DirectoryNotFoundException(dir);
+      PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO := 'ru';
+      var failures := CodeCompletion.CodeCompletionTester.GetIntellisenseFailures(dir);
+      foreach var failure in failures do
+        Println('FAIL: ' + failure);
+      Println($'IntelliSense failures: {failures.Length}');
+      if failures.Length > 0 then Halt(1);
+      exit;
+    end;
     if (ParamCount = 0) or (ParamStr(1) = '1') then
     begin
       Println('Compiling tests...');
