@@ -16,7 +16,15 @@ if errorlevel 1 (
     exit /b 1
 )
 
+call "%~dp0_RebuildStandartModules_net10.bat" "%CONFIGURATION%" --skip-build
+if errorlevel 1 (
+    echo.
+    echo ERROR: .NET 10 standard module rebuild failed.
+    pause
+    exit /b 1
+)
+
 echo.
-echo .NET 10 compiler updated in "%~dp0bin-net10".
+echo .NET 10 compiler and standard modules updated in "%~dp0bin-net10".
 echo IDE plugin updated in "%~dp0bin\CompileNet10Plugin.dll".
 exit /b 0
