@@ -1875,6 +1875,7 @@ namespace CodeCompletion
     {
         public ProcScope def_proc;
         public SymScope top_mod_scope;
+        internal location methodNameLocation;
 
         public ProcRealization(ProcScope def_proc, SymScope top_mod_scope)
         {
@@ -7951,11 +7952,14 @@ namespace CodeCompletion
         {
             this.si = si;
             this.mi = mi;
-            if (declaringType == TypeTable.string_type && mi.GetParameters().Length >= 1 && mi.GetParameters()[0].ParameterType.Name == "IEnumerable`1")
+            // A string scope can be a language-specific clone of the standard scope.
+            if (declaringType is CompiledScope receiver && receiver.ctn == typeof(string) &&
+                mi.GetParameters().FirstOrDefault()?.ParameterType is Type receiverType && receiverType.IsGenericType &&
+                receiverType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
                 List<TypeScope> type_list = new List<TypeScope>();
                 type_list.Add(TypeTable.char_type);
-                declaringType = TypeTable.get_compiled_type(mi.GetParameters()[0].ParameterType.GetGenericTypeDefinition()).GetInstance(type_list);
+                declaringType = TypeTable.get_compiled_type(typeof(IEnumerable<>)).GetInstance(type_list);
             }
             string[] args = declaringType.TemplateArguments;
             this.declaringType = declaringType;

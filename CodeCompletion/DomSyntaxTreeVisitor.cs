@@ -1482,8 +1482,12 @@ namespace CodeCompletion
 
                 if (_procedure_header.name.class_name != null)
                 {
+                    // A qualified member inside a type explicitly implements an interface member.
+                    bool explicitInterfaceMember = cur_scope is TypeScope;
                     topScope = null;
-                    if (_procedure_header.name.ln != null && _procedure_header.name.ln.Count > 0)
+                    if (explicitInterfaceMember)
+                        topScope = cur_scope;
+                    else if (_procedure_header.name.ln != null && _procedure_header.name.ln.Count > 0)
                     {
                         SymScope tmp_scope = cur_scope;
                         for (int i = 0; i < _procedure_header.name.ln.Count; i++)
@@ -1498,7 +1502,8 @@ namespace CodeCompletion
                         topScope = cur_scope.FindName(_procedure_header.name.class_name.name);
                     if (topScope != null)
                     {
-                        ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
+                        if (!explicitInterfaceMember)
+                            ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
                         if (ps != null && ps is CompiledMethodScope)
                             ps = null;
                         if (ps == null)
@@ -1510,7 +1515,7 @@ namespace CodeCompletion
                                 ext = true;
                             else if (!(topScope is TypeSynonim) && !(topScope is PointerScope) && !(topScope is SetScope) && !(topScope is FileScope))
                                 ext = true;
-                            if (ext)
+                            if (ext && !explicitInterfaceMember)
                             {
                                 not_def = true;
                                 ps.is_extension = true;
@@ -1562,6 +1567,7 @@ namespace CodeCompletion
                             pr.head_loc = loc;
                             impl_scope.AddName("$method", pr);
                         }
+                        pr.methodNameLocation = get_location(_procedure_header.name.meth_name);
                     }
                     else
                     {
@@ -1811,7 +1817,26 @@ namespace CodeCompletion
             location loc = get_location(_function_header);
             returned_scope = null;
             if (_function_header.return_type != null && !(_function_header.return_type is enum_type_definition && _function_header.template_args != null && _function_header.template_args.Count > 0))
-                _function_header.return_type.visit(this);
+            {
+                // The procedure scope is not available yet. Resolve generic names locally so
+                // tuples in a return type cannot be mistaken for enums in the enclosing scope.
+                var enclosingScope = cur_scope;
+                if (_function_header.template_args != null && _function_header.template_args.Count > 0)
+                {
+                    cur_scope = new BlockScope(enclosingScope);
+                    foreach (ident parameter in _function_header.template_args.idents)
+                        cur_scope.AddName(parameter.name,
+                            new TemplateParameterScope(parameter.name, null, cur_scope));
+                }
+                try
+                {
+                    _function_header.return_type.visit(this);
+                }
+                finally
+                {
+                    cur_scope = enclosingScope;
+                }
+            }
             if (returned_scope != null)
             {
                 if (returned_scope is ProcScope)
@@ -1823,8 +1848,11 @@ namespace CodeCompletion
                 _function_header.name.visit(this);
                 if (_function_header.name.class_name != null)
                 {
+                    bool explicitInterfaceMember = cur_scope is TypeScope;
                     topScope = null;
-                    if (_function_header.name.ln != null && _function_header.name.ln.Count > 0)
+                    if (explicitInterfaceMember)
+                        topScope = cur_scope;
+                    else if (_function_header.name.ln != null && _function_header.name.ln.Count > 0)
                     {
                         SymScope tmp_scope = cur_scope;
                         for (int i = 0; i < _function_header.name.ln.Count; i++)
@@ -1839,7 +1867,8 @@ namespace CodeCompletion
                         topScope = cur_scope.FindName(_function_header.name.class_name.name);
                     if (topScope != null)
                     {
-                        ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
+                        if (!explicitInterfaceMember)
+                            ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
                         if (ps != null && ps is CompiledMethodScope)
                             ps = null;
                         if (ps == null)
@@ -1852,7 +1881,7 @@ namespace CodeCompletion
                                 ext = true;
                             else if (!(topScope is TypeSynonim) && !(topScope is PointerScope) && !(topScope is SetScope) && !(topScope is FileScope))
                                 ext = true;
-                            if (ext)
+                            if (ext && !explicitInterfaceMember)
                             {
                                 not_def = true;
                                 ps.AddName("self", new ElementScope(new SymInfo("self", SymbolKind.Parameter, "self"), topScope, cur_scope));
@@ -1901,6 +1930,7 @@ namespace CodeCompletion
                             is_realization = true;
                             impl_scope.AddName("$method", pr);
                         }
+                        pr.methodNameLocation = get_location(_function_header.name.meth_name);
                     }
                     else
                     {

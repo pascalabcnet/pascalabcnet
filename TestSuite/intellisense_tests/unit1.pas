@@ -18,9 +18,9 @@ type
 
 procedure p1;
 begin
-  t1.i{@var t1.i: integer;@} := 1;
+  t1.i{@static t1.i: integer;@} := 1;
   var j{@var j: integer;@} := t1.i;
-  var k{@var k: integer;@} := t2.i;
+  var k{@var k: integer;@} := t2.i{@static t2.i: integer;@};
 end;
 
 end.

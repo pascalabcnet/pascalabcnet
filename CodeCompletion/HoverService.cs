@@ -70,7 +70,20 @@ namespace CodeCompletion
                 warnings);
 
             if (expressionWithoutBracketsTree == null || errorsWithoutBrackets.Count > 0)
+            {
+                // A qualified implementation header such as T<U>.P is not a Pascal expression.
+                // Use the resolved method only when the cursor is on its name in that header.
+                if (domConverter.visitor.FindScopeByLocation(line + 1, column + 1) is ProcRealization method &&
+                    method.IsInScope(method.methodNameLocation, line + 1, column + 1))
+                {
+                    string methodName = method.def_proc.si.name;
+                    return domConverter.GetDescription(new PascalABCCompiler.SyntaxTree.ident(methodName),
+                        fileName, methodName, line, column,
+                        PascalABCCompiler.Contracts.Parsers.KeywordKind.Function, true);
+                }
+
                 return null;
+            }
 
             var useHeader = false;
             if (expression == null || errors.Count > 0)

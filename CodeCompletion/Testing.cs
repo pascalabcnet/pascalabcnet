@@ -75,7 +75,8 @@ namespace CodeCompletion
                     var pos = ind-1;
                     var line = GetLineByPos(lines, pos);
                     var col = GetColByPos(lines, pos);
-                    var desc = CodeCompletion.CodeCompletionTester.GetDescription(pos, tmp, line, col, FileName, dc, parser);
+                    var desc = HoverService.GetDescription(CodeCompletionController.CurrentLanguage,
+                        dc, FileName, tmp, pos, line, col);
                     var should_desc = tmp.Substring(ind + 2, tmp.IndexOf("@}") - ind - 2);
                     if (desc == null)
                         desc = "";
@@ -263,20 +264,6 @@ namespace CodeCompletion
                 cum_pos += Environment.NewLine.Length;
             }
             return -1;
-        }
-
-        public static string GetDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, IParser parser)
-        {
-            string expr_without_brackets = null;
-            KeywordKind keyw;
-            var expr = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
-            if (expr == null)
-              expr = expr_without_brackets;
-            var errors = new List<PascalABCCompiler.Errors.Error>();
-            var warnings = new List<CompilerWarning>();
-            var tree = parser.GetExpression("test" + Path.GetExtension(FileName), expr, errors, warnings);
-            var desc = dc.GetDescription(tree, FileName, expr_without_brackets, line, col, keyw, false);
-            return desc;
         }
 
         public static string GetIndexDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, IParser parser)
