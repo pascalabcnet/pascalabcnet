@@ -5,5 +5,5 @@
   
 begin
   var x{@var x: sequence of integer;@} := t1.p1[0];
-  t1.p1[0].Average{@(расширение sequence of T) function Average(): real;@}();
+  t1.p1[0].Average{@(расширение sequence of integer) function Average(): real;@}();
 end.

@@ -1008,10 +1008,17 @@ namespace PascalABCCompiler.Parsers
         protected string GetDescriptionForCompiledMethod(ICompiledMethodScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
             string extensionType = null;
             if (scope.IsExtension && scope.Parameters.Length > 0)
             {
-                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
+                Type receiver = pis[0].ParameterType;
+                // A closed sequence receiver has a concrete element type even if its scope
+                // has not yet populated GenericInstances.
+                extensionType = receiver.IsGenericType && !receiver.ContainsGenericParameters &&
+                    receiver.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                    ? GetShortTypeName(receiver, false)
+                    : GetSimpleDescription(scope.Parameters[0].Type);
             }
             if (scope.IsExtension)
             {
@@ -1033,7 +1040,6 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(FunctionName + " ");
             Dictionary<string, string> generic_param_args = null;
             Dictionary<string, int> class_generic_table = new Dictionary<string, int>();
-            ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
             Type[] tt = scope.CompiledMethod.GetGenericArguments();
             int gen_ind = 0;
             if (!scope.IsExtension)
