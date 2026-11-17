@@ -278,11 +278,13 @@ namespace CodeCompletion
                         name = "operator" + name;
                     else
                         name = "operator " + name;
-                    List<ProcScope> meths = entry_scope.GetExtensionMethods(name, tleft);
+                    // entry_scope can be a local block; imported extensions live in the unit scope.
+                    SymScope extensionScope = stv?.entry_scope ?? entry_scope;
+                    List<ProcScope> meths = extensionScope.GetExtensionMethods(name, tleft);
                     foreach (ProcScope meth in meths)
                         lst.Add(meth);
                     lst.AddRange(lst_right);
-                    meths = entry_scope.GetExtensionMethods(name, tright);
+                    meths = extensionScope.GetExtensionMethods(name, tright);
                     foreach (ProcScope meth in meths)
                         lst.Add(meth);
                     ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, _bin_expr.left, _bin_expr.right);
