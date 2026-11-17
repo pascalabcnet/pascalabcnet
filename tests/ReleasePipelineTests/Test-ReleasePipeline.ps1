@@ -179,6 +179,9 @@ Check ([regex]::Matches($allPlan, 'RELEASE STEP: Build shared .NET 10 runtime on
 Check ([regex]::Matches($allPlan, 'RELEASE STEP: Editor regression: Enter, file loading and caret in both platform modes').Count -eq 1) 'full graph checks editor Enter, loading and caret before packaging'
 Check ([regex]::Matches($allPlan, 'RELEASE STEP: Cross-target tests using prepared compiler binaries: net10').Count -eq 1) 'full graph runs the full modern suite once'
 Check ([regex]::Matches($allPlan, 'RELEASE STEP: Additional net472 reference checks using prepared compiler binaries').Count -eq 1) 'full graph preserves additional legacy reference checks once'
+foreach ($targetName in @('.NET Framework', '.NET 10')) {
+    Check ([regex]::Matches($allPlan, [regex]::Escape("RELEASE STEP: IntelliSense tests using prepared compiler binaries: $targetName")).Count -eq 1) "full graph runs IntelliSense once for $targetName"
+}
 Check ($allPlan -notmatch 'binaries: (net472|all)') 'full graph does not repeat the full legacy suite'
 Check ($allPlan -notmatch 'RELEASE STEP DONE|RELEASE STEP FAILED|RELEASE TOTAL|С НАЧАЛА ЗАПУСКА СКРИПТА:') 'Plan prints no invented execution times'
 
@@ -191,9 +194,11 @@ $crossCalls = @($releaseAst.FindAll({ param($node)
     $node.GetCommandName() -eq 'Invoke-Checked' -and
     $node.CommandElements[1].Extent.Text.Contains("'_RunCrossTargetTests.bat'")
 }, $true))
-Check ($crossCalls.Count -eq 2) 'release has exactly two explicit cross-target invocations'
+Check ($crossCalls.Count -eq 4) 'release has exactly four explicit cross-target invocations'
 Check (($crossCalls[0].CommandElements[2].SafeGetValue() -join '|') -eq 'net472|units|reference|--skip-build') 'legacy cross-target invocation runs only reference unit checks without rebuilding runtime'
-Check (($crossCalls[1].CommandElements[2].SafeGetValue() -join '|') -eq 'net10|all|--skip-build') 'modern cross-target invocation keeps the full suite without rebuilding runtime'
+Check (($crossCalls[1].CommandElements[2].SafeGetValue() -join '|') -eq 'net472|--intellisense|--skip-build') 'legacy IntelliSense has its own invocation using prepared binaries'
+Check (($crossCalls[2].CommandElements[2].SafeGetValue() -join '|') -eq 'net10|all|--skip-build') 'modern cross-target invocation keeps the full suite without rebuilding runtime'
+Check (($crossCalls[3].CommandElements[2].SafeGetValue() -join '|') -eq 'net10|--intellisense|--skip-build') 'modern IntelliSense has its own invocation using prepared binaries'
 $standardCalls = @($releaseAst.FindAll({ param($node)
     $node -is [System.Management.Automation.Language.CommandAst] -and
     $node.GetCommandName() -eq 'Invoke-Checked' -and
@@ -214,11 +219,17 @@ Check ($rtlCalls.Count -eq 1 -and $rtlCalls[0].CommandElements[2].SafeGetValue()
 foreach ($stage in @('Test', 'Package')) {
     $plan = & (Join-Path $scripts 'generate-all-setups.ps1') -Stage $stage -Plan 6>&1 | Out-String
     Check ($plan -notmatch 'Prepare version|Build shared|Build legacy IDE|Rebuild modern') "$stage does not rebuild production binaries or modules"
+    if ($stage -eq 'Test') {
+        Check ([regex]::Matches($plan, 'RELEASE STEP: IntelliSense tests using prepared compiler binaries').Count -eq 2) 'Test runs both IntelliSense steps'
+    } else {
+        Check ($plan -notmatch 'RELEASE STEP: IntelliSense tests using prepared compiler binaries') 'Package does not run IntelliSense tests'
+    }
 }
 # Dot-sourcing the Plan exposes the same checked step functions without side effects.
 $legacyPlan = & (Join-Path $scripts 'generate-all-setups.ps1') -Target NetFramework -Plan 6>&1 | Out-String
 Check ($legacyPlan -notmatch 'Build shared|Build IDE plugin|Rebuild modern|Package modern|Package dual-target') 'NetFramework plan excludes modern preparation and packaging'
 Check ($legacyPlan -match 'Additional net472 reference checks' -and $legacyPlan -notmatch 'Cross-target tests using prepared compiler binaries:') 'NetFramework keeps only additional reference checks after the full legacy runner'
+Check ($legacyPlan.Contains('IntelliSense tests using prepared compiler binaries: .NET Framework') -and -not $legacyPlan.Contains('IntelliSense tests using prepared compiler binaries: .NET 10')) 'NetFramework runs only the legacy IntelliSense step'
 Push-Location $fixture
 try {
     $wrapperPlan = & (Join-Path $repositoryRoot '_GenerateNetFrameworkSetup.bat') -Stage Package -Plan 2>&1 | Out-String

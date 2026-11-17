@@ -2743,7 +2743,7 @@ namespace PascalABCCompiler
             var specification = new ReferenceSpec(reference.directive,
                 Path.GetDirectoryName(reference.source_file),
                 currentCompilationUnit.SyntaxTree.file_name, sourceContext, libraryOutputDirectory,
-                standardAssemblyLookup);
+                standardAssemblyLookup, allowCopyLocal: !CompilerOptions.ForIntellisense);
             // Historical {$reference} behaviour copies a directly referenced
             // local DLL to the output directory before it is loaded. The classic
             // provider performs that work after applying the old lookup rules.
@@ -4623,7 +4623,7 @@ namespace PascalABCCompiler
         }
 
         internal static string GetAssemblyPath(string name, bool search_for_intellisense,
-            Func<string, string> standardAssemblyLookup)
+            Func<string, string> standardAssemblyLookup, bool allowCopyLocal = true)
         {
             //если явно задан каталог то ищем только там
             if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX && !name.StartsWith("%GAC%\\"))
@@ -4640,9 +4640,12 @@ namespace PascalABCCompiler
                 string SearchDirectory = Path.Combine(SystemDirectory, "Lib");
                 if (File.Exists(Path.Combine(Environment.CurrentDirectory, name)))
                     return Path.Combine(Environment.CurrentDirectory, name);
-                if (File.Exists(Path.Combine(SearchDirectory, name)))
+                string libraryPath = Path.Combine(SearchDirectory, name);
+                if (File.Exists(libraryPath))
                 {
-                    File.Copy(Path.Combine(SearchDirectory, name), Path.Combine(Environment.CurrentDirectory, name), true);
+                    if (!allowCopyLocal)
+                        return libraryPath;
+                    File.Copy(libraryPath, Path.Combine(Environment.CurrentDirectory, name), true);
                     return Path.Combine(Environment.CurrentDirectory, name);
                 }
 

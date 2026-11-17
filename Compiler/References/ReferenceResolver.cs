@@ -12,7 +12,7 @@ namespace PascalABCCompiler.References
     {
         public ReferenceSpec(string text, string sourceDirectory, string diagnosticFileName,
             SyntaxTree.SourceContext sourceContext, string libraryOutputDirectory = null,
-            Func<string, string> standardAssemblyLookup = null)
+            Func<string, string> standardAssemblyLookup = null, bool allowCopyLocal = true)
         {
             Text = text;
             SourceDirectory = sourceDirectory;
@@ -20,6 +20,7 @@ namespace PascalABCCompiler.References
             SourceContext = sourceContext;
             LibraryOutputDirectory = libraryOutputDirectory;
             StandardAssemblyLookup = standardAssemblyLookup;
+            AllowCopyLocal = allowCopyLocal;
         }
 
         public string Text { get; }
@@ -28,6 +29,7 @@ namespace PascalABCCompiler.References
         public SyntaxTree.SourceContext SourceContext { get; }
         public string LibraryOutputDirectory { get; }
         public Func<string, string> StandardAssemblyLookup { get; }
+        public bool AllowCopyLocal { get; }
     }
 
     internal sealed class ResolvedReference
@@ -89,7 +91,8 @@ namespace PascalABCCompiler.References
                         return Resolved(reference, libraryFileName, true);
                 }
 
-                string assemblyFileName = Compiler.GetAssemblyPath(fileName, false, reference.StandardAssemblyLookup);
+                string assemblyFileName = Compiler.GetAssemblyPath(fileName, false,
+                    reference.StandardAssemblyLookup, reference.AllowCopyLocal);
                 if (assemblyFileName != null && File.Exists(assemblyFileName))
                     return Resolved(reference, assemblyFileName, false);
 

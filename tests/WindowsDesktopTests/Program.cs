@@ -111,6 +111,19 @@ try
         var symbols = await languageService.GetCompletionAfterDotAsync(id, offset);
         Check(symbols.Any(s => s.Label == (name == "forms" ? "Text" : "Content")), name + " IntelliSense properties");
     }
+    string semanticWork = Directory.CreateDirectory(Path.Combine(work, "intellisense-reference")).FullName;
+    string semanticSource = Path.Combine(semanticWork, "forms_reference.pas");
+    string formsPath = NetCoreSystemReferences.ResolveAssemblyPath("System.Windows.Forms.dll");
+    File.WriteAllText(semanticSource,
+        $"{{$reference '{formsPath}'}}\nbegin var f: System.Windows.Forms.Form; end.");
+    var semanticCompiler = new PascalABCCompiler.Compiler();
+    var semanticOptions = new PascalABCCompiler.CompilerOptions(semanticSource,
+        PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton)
+        { ForIntellisense = true, GenerateCode = false, SavePCU = false, UseDllForSystemUnits = false };
+    Check(semanticCompiler.Compile(semanticOptions) != null, "IntelliSense resolves an absolute WinForms reference",
+        string.Join("\n", semanticCompiler.ErrorsList.Select(e => e.ToString())));
+    Check(!Directory.EnumerateFiles(semanticWork, "*.dll").Any(),
+        "IntelliSense does not stage referenced DLLs beside the source");
     var compiler = new PascalABCCompiler.Compiler();
     var implicitPathsField = typeof(PascalABCCompiler.Compiler).GetField("implicitSystemReferencePaths",
         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;

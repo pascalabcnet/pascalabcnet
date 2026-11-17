@@ -50,7 +50,27 @@ namespace CodeCompletion
     	
         public static void TestIntellisense(string dir)
         {
-            //string dir = Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests");
+            if (!Directory.Exists(dir))
+                throw new DirectoryNotFoundException(dir);
+
+            // Every invocation gets a clean copy of the Pascal fixtures. Never
+            // resolve references against DLLs left beside the original tests.
+            string workDir = Path.Combine(Path.GetTempPath(), "pabc-intellisense-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(workDir);
+            try
+            {
+                foreach (string file in Directory.GetFiles(dir, "*.pas"))
+                    File.Copy(file, Path.Combine(workDir, Path.GetFileName(file)));
+                RunIntellisenseTests(workDir, Path.GetFullPath(dir));
+            }
+            finally
+            {
+                Directory.Delete(workDir, recursive: true);
+            }
+        }
+
+        private static void RunIntellisenseTests(string dir, string sourceDir)
+        {
             var comp = new PascalABCCompiler.Compiler();
             var controller = new CodeCompletion.CodeCompletionController();
             CodeCompletion.DomSyntaxTreeVisitor.use_semantic_for_intellisense = true;
@@ -62,6 +82,7 @@ namespace CodeCompletion
             for (int i = 0; i < files.Length; i++)
             {
                 var FileName = files[i];
+                var testFileName = Path.Combine(sourceDir, Path.GetFileName(FileName));
 
                 try
                 {
@@ -84,7 +105,7 @@ namespace CodeCompletion
                     if (desc == null)
                         desc = "";
                     desc = desc.Split(new string[] { "\n"},StringSplitOptions.None)[0].Trim();
-                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, FileName+", should: "+should_desc+", is: "+desc);
+                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, testFileName+", should: "+should_desc+", is: "+desc);
                     tmp = tmp.Remove(ind, tmp.IndexOf("@}") + 2 - ind);
                     ind = tmp.IndexOf("{@");
                 }
@@ -101,7 +122,7 @@ namespace CodeCompletion
                     if (desc == null)
                         desc = "";
                     desc = desc.Split(new string[] { "\n" }, StringSplitOptions.None)[0].Trim();
-                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, FileName + ", should: " + should_desc + ", is: " + desc);
+                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, testFileName + ", should: " + should_desc + ", is: " + desc);
                     tmp = tmp.Remove(ind, tmp.IndexOf("]}") + 2 - ind);
                     ind = tmp.IndexOf("{[");
                 }
@@ -118,14 +139,14 @@ namespace CodeCompletion
                     if (desc == null)
                         desc = "";
                     desc = desc.Split(new string[] { "\n" }, StringSplitOptions.None)[0].Trim();
-                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, FileName + ", should: " + should_desc + ", is: " + desc);
+                    assert(string.Compare(desc.Replace(", ", ","), should_desc.Replace(", ", ","), true) == 0, testFileName + ", should: " + should_desc + ", is: " + desc);
                     tmp = tmp.Remove(ind, tmp.IndexOf(")}") + 2 - ind);
                     ind = tmp.IndexOf("{(");
                 }
                 }
                 catch (Exception error) when (reportedFailures != null)
                 {
-                    reportedFailures.Add(FileName + ": " + error.Message);
+                    reportedFailures.Add(testFileName + ": " + error.Message);
                 }
             }
         }

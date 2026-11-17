@@ -48,7 +48,7 @@ namespace PascalABCCompiler.References
     {
         public PreparedReference Stage(ResolvedReference reference, ReferenceStagingContext context)
         {
-            if (!reference.CopyLocal)
+            if (!reference.Specification.AllowCopyLocal || !reference.CopyLocal)
                 return new PreparedReference(reference, reference.FileName);
 
             try

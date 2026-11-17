@@ -173,10 +173,11 @@ try {
                 finally { Pop-Location }
             }
         }
-        # The six legacy passes already cover the full net472 suite. Preserve
-        # only the extra reference/path/output/IntelliSense checks here.
         Invoke-ReleaseStep 'Additional net472 reference checks using prepared compiler binaries' {
             Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @('net472', 'units', 'reference', '--skip-build')
+        }
+        Invoke-ReleaseStep 'IntelliSense tests using prepared compiler binaries: .NET Framework' {
+            Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @('net472', '--intellisense', '--skip-build')
         }
         if ($includeNet10) {
             Invoke-ReleaseStep 'Portable PDB and runtime error location: net10' {
@@ -186,6 +187,9 @@ try {
             }
             Invoke-ReleaseStep 'Cross-target tests using prepared compiler binaries: net10' {
                 Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @('net10', 'all', '--skip-build')
+            }
+            Invoke-ReleaseStep 'IntelliSense tests using prepared compiler binaries: .NET 10' {
+                Invoke-Checked (Join-Path $repositoryRoot '_RunCrossTargetTests.bat') @('net10', '--intellisense', '--skip-build')
             }
         }
     }
