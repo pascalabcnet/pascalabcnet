@@ -1010,6 +1010,9 @@ namespace PascalABCCompiler.Parsers
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
             string extensionType = null;
+            Type arrayElementParameter = null;
+            string arrayElementType = null;
+            var genericArgs = scope.GenericArgs;
             if (scope.IsExtension && scope.Parameters.Length > 0)
             {
                 Type receiver = pis[0].ParameterType;
@@ -1019,6 +1022,15 @@ namespace PascalABCCompiler.Parsers
                     receiver.GetGenericTypeDefinition() == typeof(IEnumerable<>)
                     ? GetShortTypeName(receiver, false)
                     : GetSimpleDescription(scope.Parameters[0].Type);
+                if (receiver.IsArray && receiver.GetElementType() is Type elementParameter &&
+                    elementParameter.IsGenericParameter && scope.DeclaringType is IArrayScope array &&
+                    array.ElementType != null)
+                {
+                    arrayElementParameter = elementParameter;
+                    arrayElementType = GetSimpleDescription(array.ElementType);
+                    extensionType = GetDescriptionForArray(array);
+                    genericArgs = genericArgs ?? new List<string>();
+                }
             }
             if (scope.IsExtension)
             {
@@ -1065,6 +1077,8 @@ namespace PascalABCCompiler.Parsers
             {
                 gen_ind = 0;
                 generic_param_args = new Dictionary<string, string>();
+                if (arrayElementParameter != null)
+                    generic_param_args.Add(arrayElementParameter.Name, arrayElementType);
                 for (int i = 0; i < pis.Length; i++)
                 {
                     if (i == 0)
@@ -1106,7 +1120,9 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(GenericTypesStartBracket);
                 for (int i = gen_ind; i < tt.Length; i++)
                 {
-                    if (class_generic_table.ContainsKey(tt[i].Name))
+                    if (tt[i] == arrayElementParameter)
+                        sb.Append(arrayElementType);
+                    else if (class_generic_table.ContainsKey(tt[i].Name))
                     {
                         int ind = class_generic_table[tt[i].Name];
                         if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
@@ -1151,9 +1167,9 @@ namespace PascalABCCompiler.Parsers
                 string inst_type = null;
                 if (!pis[i].ParameterType.IsByRef)
                 {
-                    if (scope.GenericArgs != null)
+                    if (genericArgs != null)
                     {
-                        inst_type = get_type_instance(pis[i].ParameterType, scope.GenericArgs, generic_param_args);
+                        inst_type = get_type_instance(pis[i].ParameterType, genericArgs, generic_param_args);
                     }
                     if (inst_type == null)
                         sb.Append(GetShortTypeName(pis[i].ParameterType, false));
@@ -1173,9 +1189,9 @@ namespace PascalABCCompiler.Parsers
                 else
                 {
                     Type t = pis[i].ParameterType.GetElementType();
-                    if (scope.GenericArgs != null)
+                    if (genericArgs != null)
                     {
-                        inst_type = get_type_instance(t, scope.GenericArgs, generic_param_args);
+                        inst_type = get_type_instance(t, genericArgs, generic_param_args);
                     }
                     if (inst_type == null)
                         sb.Append(GetShortTypeName(t, false));
@@ -1189,9 +1205,9 @@ namespace PascalABCCompiler.Parsers
             string ret_inst_type = null;
             if (scope.ReturnType != null)
             {
-                if (scope.GenericArgs != null)
+                if (genericArgs != null)
                 {
-                    ret_inst_type = get_type_instance(scope.CompiledMethod.ReturnType, scope.GenericArgs, generic_param_args);
+                    ret_inst_type = get_type_instance(scope.CompiledMethod.ReturnType, genericArgs, generic_param_args);
                 }
                 if (ret_inst_type == null)
                 {

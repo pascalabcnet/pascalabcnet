@@ -171,6 +171,15 @@ Check(
     signatureTask.Result?.Signatures.Any(signature => signature.Parameters.Count > 0) == true,
     "LanguageServices signature help contains parameters");
 
+var reverseFile = Path.Combine(Path.GetTempPath(), $"ArrayReverseHover_{Guid.NewGuid():N}.pas");
+var reverseId = new Uri(reverseFile).AbsoluteUri;
+const string reverseSource = "begin var values: array of byte; values.Reverse; end.";
+await languageService.OpenOrUpdateDocumentAsync(reverseId, reverseFile, reverseSource, version: 1);
+var reverseHover = await languageService.GetHoverAsync(
+    reverseId, reverseSource.IndexOf("Reverse", StringComparison.Ordinal) + 1);
+Check(reverseHover?.Contents.Contains("array of byte) function Reverse<byte>(): sequence of byte;",
+    StringComparison.Ordinal) == true, "Array Reverse hover infers byte on .NET 10");
+
 var anonymousFile = Path.Combine(Path.GetTempPath(), $"SemanticHover_{Guid.NewGuid():N}.pas");
 var anonymousId = new Uri(anonymousFile).AbsoluteUri;
 const string anonymousSource = """
