@@ -266,6 +266,13 @@ namespace CodeCompletion
             return -1;
         }
 
+        // CrossTargetTestRunner calls this public entry point from Pascal.
+        public static string GetDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, IParser parser)
+        {
+            return HoverService.GetDescription(CodeCompletionController.CurrentLanguage,
+                dc, FileName, content, pos, line, col);
+        }
+
         public static string GetIndexDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, IParser parser)
         {
             string expr_without_brackets = null;
