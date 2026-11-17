@@ -838,6 +838,7 @@ end;
 procedure PrintUsage;
 begin
   Println('CrossTargetTestRunner [all|core|units|errors] [часть имени файла]');
+  Println('CrossTargetTestRunner --intellisense');
   Println('Старые номера проходов временно поддерживаются: 1 = core, 3 = units+errors.');
 end;
 
@@ -883,6 +884,17 @@ begin
 
     Languages.Integration.LanguageIntegrator.LoadAllLanguages();
     System.Environment.CurrentDirectory := RunnerDir;
+    if (ParamCount > 0) and (ParamStr(1).ToLower() = '--intellisense') then
+    begin
+      var dir := Path.Combine(TestSuiteDir, 'intellisense_tests');
+      PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO := 'ru';
+      var failures := CodeCompletion.CodeCompletionTester.GetIntellisenseFailures(dir);
+      foreach var failure in failures do
+        Println('FAIL: ' + failure);
+      Println($'IntelliSense failures: {failures.Length}');
+      if failures.Length > 0 then Halt(1);
+      Halt(0);
+    end;
     CurrentLanguageInfo := GetCurrentLanguageInfo(TestSuiteDir);
     LoadModernExclusions;
     PrepareTargetDirectories;

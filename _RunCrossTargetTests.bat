@@ -23,6 +23,7 @@ if /I "%TARGET%"=="net10" goto run_net10
 
 :usage
 echo Usage: %~nx0 [net472^|net10^|all] [all^|core^|units^|errors] [file-name-filter] [--skip-build]
+echo        %~nx0 net10 --intellisense [--skip-build]
 exit /b 2
 
 :run_all
