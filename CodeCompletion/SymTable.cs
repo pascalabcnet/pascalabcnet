@@ -6203,13 +6203,7 @@ namespace CodeCompletion
 
             Type t = this.ctn;
             if (!ctn.IsGenericTypeDefinition)
-            {
-                t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name);
-                if (t == null && this.instances != null && this.instances.Count > 0 && ctn.DeclaringType != null && this.ctn.DeclaringType.IsGenericTypeDefinition)
-                {
-                    t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.DeclaringType.Name.Substring(0, this.ctn.DeclaringType.Name.IndexOf('`')) + "`" + this.instances.Count + "+" + ctn.Name);
-                }
-            }
+                t = ctn.GetGenericTypeDefinition();
             else if (this.instances != null && this.instances.Count > 0)
             {
                 if (this.instances.Count != ctn.GetGenericArguments().Length)
