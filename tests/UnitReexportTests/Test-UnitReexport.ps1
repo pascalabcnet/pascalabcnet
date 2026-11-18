@@ -96,6 +96,51 @@ foreach ($target in @('net472', 'net10')) {
             Invoke-Compile $invalidSource 'UnqualifiedExport.exe' $expected
         }
 
+        $invalidSource = 'ExportBeforeUses.pas'
+        [IO.File]::WriteAllLines((Join-Path $dir $invalidSource), @(
+            'unit ExportBeforeUses;', 'interface', 'export ReexportOrigin.F1;', '',
+            'uses ReexportOrigin;', 'implementation', 'end.'
+        ))
+        $expected = @(Get-DiagnosticTexts 'PascalABCParser.dat' 'REEXPORT_BEFORE_USES' |
+            ForEach-Object { "[3,1] ${invalidSource}: $_" })
+        Invoke-Compile $invalidSource 'ExportBeforeUses.exe' $expected
+
+        $messages = Get-DiagnosticTexts 'PascalABCParser.dat' 'REEXPORT_AFTER_DECLARATIONS'
+        foreach ($case in @(
+            @{ Kind = 'Type'; Section = 'type TFirst = integer;'; Name = 'export = string;' },
+            @{ Kind = 'Var'; Section = 'var First: integer;'; Name = 'export: integer;' },
+            @{ Kind = 'Const'; Section = 'const First = 1;'; Name = 'export = 2;' }
+        )) {
+            $unit = "ExportAfter$($case.Kind)"
+            $invalidSource = "$unit.pas"
+            [IO.File]::WriteAllLines((Join-Path $dir $invalidSource), @(
+                "unit $unit;", 'interface', 'uses ReexportOrigin;', $case.Section, $case.Name,
+                'export ReexportOrigin.F1 as Alias;', 'type TNext = integer;', 'implementation', 'end.'
+            ))
+            $expected = @($messages | ForEach-Object { "[6,1] ${invalidSource}: $_" })
+            Invoke-Compile $invalidSource "$unit.exe" $expected
+
+            $unit = "Export$($case.Kind)Name"
+            [IO.File]::WriteAllLines((Join-Path $dir "$unit.pas"), @(
+                "unit $unit;", 'interface', $case.Section, $case.Name, 'implementation', 'end.'
+            ))
+            Invoke-Compile "$unit.pas" "$unit.exe"
+        }
+
+        foreach ($case in @(
+            @{ Kind = 'Procedure'; Header = 'procedure P;' },
+            @{ Kind = 'Function'; Header = 'function F: integer;' }
+        )) {
+            $unit = "ExportAfter$($case.Kind)"
+            $invalidSource = "$unit.pas"
+            [IO.File]::WriteAllLines((Join-Path $dir $invalidSource), @(
+                "unit $unit;", 'interface', 'uses ReexportOrigin;', $case.Header,
+                'export ReexportOrigin.F1 as Alias;', 'implementation', 'end.'
+            ))
+            $expected = @($messages | ForEach-Object { "[5,1] ${invalidSource}: $_" })
+            Invoke-Compile $invalidSource "$unit.exe" $expected
+        }
+
         Invoke-Client 'FromSource.exe'
         $sourceDir = $dir
         $pcuDir = Join-Path $dir 'pcu-only'

@@ -57,7 +57,8 @@
 %token <ti> tkStep 
 %token <ti> tkExport
 
-%type <stn> unit_reexport_clauses unit_reexport_list unit_reexport_item
+%type <stn> unit_reexport_nonempty
+%type <stn> unit_reexport_clauses unit_reexport_list unit_reexport_item unit_reexport_after_declarations
 
 %type <ti> unit_key_word class_or_static 
 %type <stn> assignment 
@@ -111,6 +112,7 @@
 %type <stn> inherited_message  
 %type <stn> implementation_part  
 %type <stn> interface_part abc_interface_part  
+%type <stn> interface_declarations
 %type <stn> simple_type_list  
 %type <ex> literal one_literal
 %type <stn> literal_list  
@@ -170,6 +172,7 @@
 %type <td> template_type
 %type <stn> try_stmt  
 %type <stn> uses_clause used_units_list uses_clause_one uses_clause_one_or_empty 
+%type <stn> uses_clause_nonempty
 %type <stn> unit_file  
 %type <stn> used_unit_name
 %type <stn> unit_header  
@@ -366,38 +369,24 @@ uses_clause_one_or_empty
 	;
 
 uses_clause
-    :
-		{ 
-			$$ = null; 
-		}
-    | uses_clause uses_clause_one            
-        { 
-   			if (parserTools.buildTreeForFormatter)
-   			{
-	        	if ($1 == null)
-                {
-	        		$$ = new uses_closure($2 as uses_list,@$);
-                }
-	        	else {
-                    ($1 as uses_closure).AddUsesList($2 as uses_list,@$);
-                    $$ = $1;
-                }
-   			}
-   			else 
-   			{
-	        	if ($1 == null)
-                {
-                    $$ = $2;
-                    $$.source_context = @$;
-                }
-	        	else 
-                {
-                    ($1 as uses_list).AddUsesList($2 as uses_list,@$);
-                    $$ = $1;
-                    $$.source_context = @$;
-                }
-			}
-		}
+    : { $$ = null; }
+    | uses_clause_nonempty { $$ = $1; }
+    ;
+
+uses_clause_nonempty
+    : uses_clause_one
+        {
+            $$ = parserTools.buildTreeForFormatter ? new uses_closure((uses_list)$1, @1) : $1;
+        }
+    | uses_clause_nonempty uses_clause_one
+        {
+            if (parserTools.buildTreeForFormatter)
+                ((uses_closure)$1).AddUsesList((uses_list)$2, @$);
+            else
+                ((uses_list)$1).AddUsesList((uses_list)$2, @$);
+            $$ = $1;
+            $$.source_context = @$;
+        }
     ;
 
 used_units_list
@@ -465,17 +454,38 @@ unit_name
     ;
 
 interface_part
-    : tkInterface uses_clause unit_reexport_clauses interface_decl_sect_list
-        { 
-            var defs = (declarations)$4;
-            defs.defs.InsertRange(0, ((declarations)$3).defs);
-            $$ = new interface_node(defs, $2 as uses_list, null, LexLocation.MergeAll(@1,@2,@3,@4));
+    : tkInterface uses_clause_nonempty interface_declarations
+        {
+            $$ = new interface_node((declarations)$3, (uses_list)$2, null, LexLocation.MergeAll(@1,@2,@3));
+        }
+    | tkInterface interface_declarations
+        {
+            $$ = new interface_node((declarations)$2, null, null, LexLocation.MergeAll(@1,@2));
+        }
+    | tkInterface unit_reexport_nonempty uses_clause_nonempty unit_reexport_clauses interface_decl_sect_list
+        {
+            parserTools.AddErrorFromResource("REEXPORT_BEFORE_USES", @2);
+            $$ = new interface_node((declarations)$5, (uses_list)$3, null, @$);
+        }
+    ;
+
+interface_declarations
+    : unit_reexport_clauses interface_decl_sect_list
+        {
+            var defs = (declarations)$2;
+            defs.defs.InsertRange(0, ((declarations)$1).defs);
+            $$ = defs;
         }
     ;
 
 unit_reexport_clauses
     : { $$ = new declarations(); }
-    | unit_reexport_clauses tkExport unit_reexport_list tkSemiColon
+    | unit_reexport_nonempty { $$ = $1; }
+    ;
+
+unit_reexport_nonempty
+    : tkExport unit_reexport_list tkSemiColon { $$ = $2; }
+    | unit_reexport_nonempty tkExport unit_reexport_list tkSemiColon
         {
             var defs = (declarations)$1;
             defs.defs.AddRange(((declarations)$3).defs);
@@ -628,16 +638,32 @@ inclass_decl_sect_list1
 int_decl_sect
     : const_decl_sect
 		{ $$ = $1; }
+    | const_decl_sect unit_reexport_after_declarations
+        { $$ = $1; }
     | res_str_decl_sect
 		{ $$ = $1; }
     | type_decl_sect
 		{ $$ = $1; }
+    // Share the optional attribute prefix with type_decl so "export = ..." stays a type declaration.
+    | type_decl_sect attribute_declarations unit_reexport_after_declarations
+        { $$ = $1; }
     | var_decl_sect
 		{ $$ = $1; }
+    | var_decl_sect unit_reexport_after_declarations
+        { $$ = $1; }
     | int_proc_header
 		{ $$ = $1; }
+    | int_proc_header unit_reexport_after_declarations
+        { $$ = $1; }
     | int_func_header
 		{ $$ = $1; }
+    | int_func_header unit_reexport_after_declarations
+        { $$ = $1; }
+    ;
+
+unit_reexport_after_declarations
+    : unit_reexport_nonempty
+        { parserTools.AddErrorFromResource("REEXPORT_AFTER_DECLARATIONS", @1); $$ = $1; }
     ;
 
 decl_sect
