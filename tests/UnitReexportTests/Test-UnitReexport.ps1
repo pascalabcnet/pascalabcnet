@@ -141,18 +141,50 @@ foreach ($target in @('net472', 'net10')) {
             Invoke-Compile $invalidSource "$unit.exe" $expected
         }
 
+        [IO.File]::WriteAllLines((Join-Path $dir 'SimpleExportFacade.pas'), @(
+            'unit SimpleExportFacade;', 'uses ReexportOrigin;',
+            'export ReexportOrigin.F1, ReexportOrigin.F2 as FFF2;',
+            'export ReexportOrigin.TOriginPoint as PublicPoint;', 'end.'
+        ))
+        [IO.File]::WriteAllLines((Join-Path $dir 'SimpleExportClient.pas'), @(
+            'uses SimpleExportFacade;', 'begin',
+            '  assert(F1(10) = 11);', '  assert(SimpleExportFacade.F1(''abc'') = 3);',
+            '  var n := 0;', '  FFF2(n);', '  assert(n = 2);',
+            '  var p: PublicPoint;', '  p.X := 17;', '  assert(p.X = 17);', 'end.'
+        ))
+        Invoke-TestProgram 'SimpleExportClient.pas' 'SimpleFromSource.exe'
+
+        foreach ($case in @(
+            @{ Name = 'SimpleExportBeforeUses'; Before = @(); Clause = 'export ReexportOrigin.F1;'; After = @('uses ReexportOrigin;'); Key = 'REEXPORT_BEFORE_USES' },
+            @{ Name = 'SimpleExportAfterType'; Before = @('uses ReexportOrigin;', 'type T = integer;', '  export = string;'); Clause = 'export ReexportOrigin.F1;'; After = @(); Key = 'REEXPORT_AFTER_DECLARATIONS' },
+            @{ Name = 'SimpleExportAfterConst'; Before = @('uses ReexportOrigin;', 'const C = 1;', '  export = 2;'); Clause = 'export ReexportOrigin.F1;'; After = @(); Key = 'REEXPORT_AFTER_DECLARATIONS' },
+            @{ Name = 'SimpleExportAfterVar'; Before = @('uses ReexportOrigin;', 'var V: integer;', '  export: integer;'); Clause = 'export ReexportOrigin.F1;'; After = @(); Key = 'REEXPORT_AFTER_DECLARATIONS' },
+            @{ Name = 'SimpleExportAfterProcedure'; Before = @('uses ReexportOrigin;', 'procedure P; begin end;'); Clause = 'export ReexportOrigin.F1;'; After = @(); Key = 'REEXPORT_AFTER_DECLARATIONS' },
+            @{ Name = 'SimpleExportAfterFunction'; Before = @('uses ReexportOrigin;', 'function F: integer := 1;'); Clause = 'export ReexportOrigin.F1;'; After = @(); Key = 'REEXPORT_AFTER_DECLARATIONS' }
+        )) {
+            $file = "$($case.Name).pas"
+            [IO.File]::WriteAllLines((Join-Path $dir $file),
+                (@("unit $($case.Name);") + $case.Before + @($case.Clause) + $case.After + @('end.')))
+            $line = $case.Before.Count + 2
+            $expected = @(Get-DiagnosticTexts 'PascalABCParser.dat' $case.Key |
+                ForEach-Object { "[$line,1] ${file}: $_" })
+            Invoke-Compile $file "$($case.Name).exe" $expected
+        }
+
         Invoke-Client 'FromSource.exe'
         $sourceDir = $dir
         $pcuDir = Join-Path $dir 'pcu-only'
         New-Item -ItemType Directory -Path $pcuDir | Out-Null
-        foreach ($unit in @('ReexportOrigin', 'ReexportFacade', 'ReexportBridge')) {
+        foreach ($unit in @('ReexportOrigin', 'ReexportFacade', 'ReexportBridge', 'SimpleExportFacade')) {
             if (!(Test-Path -LiteralPath "$unit.pcu")) { throw "Missing fresh $unit.pcu" }
             Copy-Item -LiteralPath "$unit.pcu" -Destination $pcuDir
         }
         Copy-Item -LiteralPath 'ReexportClient.pas' -Destination $pcuDir
+        Copy-Item -LiteralPath 'SimpleExportClient.pas' -Destination $pcuDir
         $dir = $pcuDir
         Set-Location -LiteralPath $dir
         Invoke-Client 'FromPcu.exe'
+        Invoke-TestProgram 'SimpleExportClient.pas' 'SimpleFromPcu.exe'
         [IO.File]::WriteAllText((Join-Path $dir 'HiddenClient.pas'),
             'uses ReexportFacade; begin assert(Hidden = 42); end.')
         Invoke-Compile 'HiddenClient.pas' 'HiddenClient.exe' 'Hidden'

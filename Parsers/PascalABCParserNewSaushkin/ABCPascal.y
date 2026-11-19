@@ -113,6 +113,7 @@
 %type <stn> implementation_part  
 %type <stn> interface_part abc_interface_part  
 %type <stn> interface_declarations
+%type <stn> simple_unit_declarations simple_unit_decl_list simple_unit_decl
 %type <stn> simple_type_list  
 %type <ex> literal one_literal
 %type <stn> literal_list  
@@ -519,10 +520,47 @@ implementation_part
 	;
 		
 abc_interface_part
-    : uses_clause decl_sect_list    
-        { 
-			$$ = new interface_node($2 as declarations, $1 as uses_list, null, null); 
+    : uses_clause_nonempty simple_unit_declarations
+        {
+            $$ = new interface_node((declarations)$2, (uses_list)$1, null, null);
         }
+    | simple_unit_declarations
+        {
+            $$ = new interface_node((declarations)$1, null, null, null);
+        }
+    | unit_reexport_nonempty uses_clause_nonempty unit_reexport_clauses simple_unit_decl_list
+        {
+            parserTools.AddErrorFromResource("REEXPORT_BEFORE_USES", @1);
+            $$ = new interface_node((declarations)$4, (uses_list)$2, null, null);
+        }
+    ;
+
+simple_unit_declarations
+    : unit_reexport_clauses simple_unit_decl_list
+        {
+            var defs = (declarations)$2;
+            defs.defs.InsertRange(0, ((declarations)$1).defs);
+            $$ = defs;
+        }
+    ;
+
+simple_unit_decl_list
+    :
+        {
+            $$ = new declarations();
+            if (GlobalDecls == null)
+                GlobalDecls = (declarations)$$;
+        }
+    | simple_unit_decl_list simple_unit_decl
+        { $$ = ((declarations)$1).Add((declaration)$2, @$); }
+    ;
+
+simple_unit_decl
+    : decl_sect { $$ = $1; }
+    | const_decl_sect unit_reexport_after_declarations { $$ = $1; }
+    | var_decl_sect unit_reexport_after_declarations { $$ = $1; }
+    | type_decl_sect attribute_declarations unit_reexport_after_declarations { $$ = $1; }
+    | proc_func_constr_destr_decl_with_attr unit_reexport_after_declarations { $$ = $1; }
     ;
 
 initialization_part                                          
