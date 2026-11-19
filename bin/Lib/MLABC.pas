@@ -86,6 +86,8 @@ uses MLDatasets;
 uses DataAdapters;
 uses MLUtilsABC;
 
+export MLUtilsABC.EncodeLabels, DataFrameABC.DT; 
+
 type 
   Vector = LinearAlgebraML.Vector;
   Matrix = LinearAlgebraML.Matrix;
@@ -228,26 +230,9 @@ const
   dtuHours = DateTimeUnit.dtuHours;
   dtuMinutes = DateTimeUnit.dtuMinutes;
   dtuSeconds = DateTimeUnit.dtuSeconds;
-
-  /// Кодирует строковые метки классов в целочисленные индексы.
-  /// Каждому уникальному значению присваивается номер 0,1,2,...
-  /// Порядок кодирования соответствует порядку первого появления меток.
-  /// Используется при обучении моделей и визуализации.
-  /// Предполагается, что входные данные уже очищены от пропущенных значений.
-  function EncodeLabels(labels: array of string): array of integer;
-
-  /// Краткое создание даты без времени.
-  function DT(year, month, day: integer): System.DateTime;
-
-  /// Краткое создание даты и времени.
-  function DT(year, month, day, hour, minute, second: integer): System.DateTime;
-
+  
   
 implementation
 
-function EncodeLabels(labels: array of string): array of integer := MLUtilsABC.EncodeLabels(labels);
-function DT(year, month, day: integer): System.DateTime := DataFrameABC.DT(year, month, day);
-function DT(year, month, day, hour, minute, second: integer): System.DateTime := DataFrameABC.DT(year, month, day, hour, minute, second);
-  
 end.
 
