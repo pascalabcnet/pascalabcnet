@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "targetFramework": "net10.0",
+  "source": {
+    "product": "Microsoft .NET SDK",
+    "version": "10.0.404",
+    "files": [
+      {
+        "path": "Microsoft.NETCoreSdk.BundledVersions.props",
+        "sha256": "4d85d73abfc667ef31d41013c3b7dc102dc977c0ac58aa526abad0a53ff4a52a"
+      },
+      {
+        "path": "Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.WindowsSdkSupportedTargetPlatforms.props",
+        "sha256": "565f9130a5b28b8bc0e452811794620acf1b46cfb9b187fc95b3b227ed87b040"
+      }
+    ],
+    "selection": "KnownFrameworkReference entries for net10.0, restricted to NETCore.App and WindowsDesktop.App. Windows platform rows retain the highest MinimumNETVersion not exceeding 10.0 for each exact platform version. Versions with no package metadata are listed separately.",
+    "selectionReference": "https://source.dot.net/Microsoft.NET.Build.Tasks/CreateWindowsSdkKnownFrameworkReferences.cs.html",
+    "copyright": "Copyright (c) .NET Foundation. All rights reserved."
+  },
+  "notes": [
+    "This is a data catalog only. It does not restore packages, load assemblies, change targets or enable new platforms.",
+    "Installed NETCore.App and WindowsDesktop.App runtimes remain the existing source of framework assemblies; their pack metadata below is descriptive, not a request to download another runtime.",
+    "The source SDK's latest runtime and targeting pack versions are provenance data, not a new minimum installed runtime requirement.",
+    "NETCore.App is cross-platform. WindowsDesktop and Windows SDK entries are Windows-only; no separate Windows packs are required by ordinary Linux or macOS net10.0 programs.",
+    "Native NuGet asset selection by OS and architecture is separate from this catalog. These entries do not extend the compiler's currently implemented RID support.",
+    "Exact Windows platform revisions are significant: .0 selects the CsWinRT 2.x family and .1 selects the CsWinRT 3.0 family. Do not normalize them into a single selection key.",
+    "Do not treat targeting assemblies as executable implementations. Compile-time and runtime assets must be resolved separately from package metadata.",
+    "Package sources and cache locations belong to NuGet configuration, not this catalog. No machine-specific paths are stored here.",
+    "Runtime assembly paths are to be registered for execution from the package cache, not copied beside the program."
+  ],
+  "frameworkReferences": [
+    {
+      "id": "Microsoft.NETCore.App",
+      "runtimeFrameworkName": "Microsoft.NETCore.App",
+      "defaultRuntimeFrameworkVersion": "10.0.0",
+      "latestRuntimeFrameworkVersion": "10.0.15",
+      "targetingPackName": "Microsoft.NETCore.App.Ref",
+      "targetingPackVersion": "10.0.15",
+      "runtimePackNamePattern": "Microsoft.NETCore.App.Runtime.**RID**",
+      "isWindowsOnly": false
+    },
+    {
+      "id": "Microsoft.WindowsDesktop.App",
+      "runtimeFrameworkName": "Microsoft.WindowsDesktop.App",
+      "defaultRuntimeFrameworkVersion": "10.0.0",
+      "latestRuntimeFrameworkVersion": "10.0.15",
+      "targetingPackName": "Microsoft.WindowsDesktop.App.Ref",
+      "targetingPackVersion": "10.0.15",
+      "runtimePackNamePattern": "Microsoft.WindowsDesktop.App.Runtime.**RID**",
+      "isWindowsOnly": true
+    },
+    {
+      "id": "Microsoft.WindowsDesktop.App.WPF",
+      "runtimeFrameworkName": "Microsoft.WindowsDesktop.App",
+      "defaultRuntimeFrameworkVersion": "10.0.0",
+      "latestRuntimeFrameworkVersion": "10.0.15",
+      "targetingPackName": "Microsoft.WindowsDesktop.App.Ref",
+      "targetingPackVersion": "10.0.15",
+      "runtimePackNamePattern": "Microsoft.WindowsDesktop.App.Runtime.**RID**",
+      "isWindowsOnly": true,
+      "profile": "WPF"
+    },
+    {
+      "id": "Microsoft.WindowsDesktop.App.WindowsForms",
+      "runtimeFrameworkName": "Microsoft.WindowsDesktop.App",
+      "defaultRuntimeFrameworkVersion": "10.0.0",
+      "latestRuntimeFrameworkVersion": "10.0.15",
+      "targetingPackName": "Microsoft.WindowsDesktop.App.Ref",
+      "targetingPackVersion": "10.0.15",
+      "runtimePackNamePattern": "Microsoft.WindowsDesktop.App.Runtime.**RID**",
+      "isWindowsOnly": true,
+      "profile": "WindowsForms"
+    }
+  ],
+  "windowsSdk": {
+    "packageId": "Microsoft.Windows.SDK.NET.Ref",
+    "runtimePackageId": "Microsoft.Windows.SDK.NET.Ref",
+    "runtimeIdentifier": "any",
+    "isWindowsOnly": true,
+    "platformVersionsWithoutPack": [
+      "7.0",
+      "8.0"
+    ],
+    "platformVersions": [
+      {
+        "platformVersion": "10.0.17763.0",
+        "minimumNetVersion": "8.0",
+        "packageVersion": "10.0.17763.57"
+      },
+      {
+        "platformVersion": "10.0.17763.1",
+        "minimumNetVersion": "10.0",
+        "packageVersion": "10.0.17763.57"
+      },
+      {
+        "platformVersion": "10.0.18362.0",
+        "minimumNetVersion": "8.0",
+        "packageVersion": "10.0.18362.57"
+      },
+      {
+        "platformVersion": "10.0.18362.1",
+        "minimumNetVersion": "10.0",
+        "packageVersion": "10.0.18362.57"
+      },
+      {
+        "platformVersion": "10.0.19041.0",
+        "minimumNetVersion": "8.0",
+        "packageVersion": "10.0.19041.57"
+      },
+      {
+        "platformVersion": "10.0.19041.1",
+        "minimumNetVersion": "10.0",
+        "packageVersion": "10.0.19041.57"
+      },
+      {
+        "platformVersion": "10.0.20348.0",
+        "minimumNetVersion": "8.0",
+        "packageVersion": "10.0.20348.57"
+      },
+      {
+        "platformVersion": "10.0.20348.1",
+        "minimumNetVersion": "10.0",
+        "packageVersion": "10.0.20348.57"
+      },
+      {
+        "platformVersion": "10.0.22000.0",
+        "minimumNetVersion": "8.0",
+        "packageVersion": "10.0.22000.57"
+      },
+      {
+        "platformVersion": "10.0.22000.1",
+        "minimumNetVersion": "10.0",
+        "packageVersion": "10.0.22000.57"
+      },
+      {
+        "platformVersion": "10.0.22621.0",
+        "minimumNetVersion": "8.0",
+        "packageVersion": "10.0.22621.57"
+      },
+      {
+        "platformVersion": "10.0.22621.1",
+        "minimumNetVersion": "10.0",
+        "packageVersion": "10.0.22621.57"
+      },
+      {
+        "platformVersion": "10.0.26100.0",
+        "minimumNetVersion": "8.0",
+        "packageVersion": "10.0.26100.57"
+      },
+      {
+        "platformVersion": "10.0.26100.1",
+        "minimumNetVersion": "10.0",
+        "packageVersion": "10.0.26100.57"
+      }
+    ]
+  },
+  "excludedCategories": [
+    "ASP.NET Core",
+    "AOT",
+    "Trimming",
+    "ReadyToRun and Crossgen2",
+    "AppHost",
+    "WebAssembly",
+    "Android",
+    "iOS",
+    "MacCatalyst",
+    "tvOS"
+  ]
+}

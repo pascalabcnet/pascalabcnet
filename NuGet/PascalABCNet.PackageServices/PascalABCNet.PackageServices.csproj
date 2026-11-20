@@ -11,6 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="PlatformPacks/net10.0.json"
+                      LogicalName="PascalABCNet.PackageServices.PlatformPacks.net10.0.json" />
     <!-- Ship the SDK's portable RID data inside our library; restore needs no SDK. -->
     <EmbeddedResource Include="$(MSBuildSDKsPath)/../PortableRuntimeIdentifierGraph.json"
                       LogicalName="PascalABCNet.PackageServices.PortableRuntimeIdentifierGraph.json" />

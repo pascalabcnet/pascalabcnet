@@ -874,6 +874,13 @@ namespace PascalABCCompiler
         private ResolvedPackageGraph restoredPackageGraph;
         private string packageTargetFramework = "net10.0";
         private PreparedReference[] packagePreparedReferences = Array.Empty<PreparedReference>();
+        private bool platformCompileReferencesPrepared;
+        private ResolvedPackageGraph platformRuntimeGraph;
+        private PreparedReference[] platformPreparedReferences = Array.Empty<PreparedReference>();
+        private Dictionary<string, string> platformAssemblyPaths =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Lazy<PlatformPackCatalog> platformPackCatalog =
+            new Lazy<PlatformPackCatalog>(PlatformPackCatalogReader.ReadNet10);
         private Dictionary<string, string> packageAssemblyPaths =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, compiler_directive> packageGraphOrigins =
@@ -885,7 +892,7 @@ namespace PascalABCCompiler
         internal string GetRestoredPackageAssemblyPath(string assemblySimpleName)
         {
             return packageAssemblyPaths.TryGetValue(assemblySimpleName + ".dll", out string path)
-                ? path : null;
+                ? path : platformAssemblyPaths.TryGetValue(assemblySimpleName + ".dll", out path) ? path : null;
         }
 
         private void RememberPackageCompileAssets(ResolvedPackageGraph graph)
@@ -913,6 +920,8 @@ namespace PascalABCCompiler
                     string.Equals(d.Name.text, StringConstants.compiler_directive_target, StringComparison.OrdinalIgnoreCase)
                     && string.Equals(d.Directive?.text, "windows", StringComparison.OrdinalIgnoreCase))
                     ? "net10.0-windows10.0.19041.0" : "net10.0";
+
+            EnsurePlatformCompileReferences(unitFileName);
 
             var directives = unitDirectives
                 .Where(d => string.Equals(d.name, StringConstants.compiler_directive_package,
@@ -1002,7 +1011,8 @@ namespace PascalABCCompiler
                 var references = PreparePackageSemanticReferences(graph, unitFileName,
                     firstAddition.Origin, out var assemblyPaths);
                 NetHelper.NetHelper.ValidateCollectibleReferencesForCompilation(
-                    packagePreparedReferences.Concat(references).Select(r => r.ResolvedReference.FileName));
+                    packagePreparedReferences.Concat(references).Concat(platformPreparedReferences)
+                        .Select(r => r.ResolvedReference.FileName));
 
                 packageRequirements = requirements;
                 restoredPackageGraph = graph;
@@ -1054,6 +1064,56 @@ namespace PascalABCCompiler
                     error.Message), unitFileName, null);
             }
             catch (FileLoadException error)
+            {
+                throw new PackageRestoreFailed(error.Message, unitFileName, null);
+            }
+        }
+
+        private void EnsurePlatformCompileReferences(string unitFileName)
+        {
+            if (platformCompileReferencesPrepared)
+                return;
+            // Preserve the existing Core-only path: no catalog read, restore or extra DLLs.
+            if (packageTargetFramework == "net10.0")
+            {
+                platformCompileReferencesPrepared = true;
+                return;
+            }
+            try
+            {
+                var selection = PlatformPackSelector.Select(platformPackCatalog.Value, packageTargetFramework);
+                var cached = new PlatformPackDownloadService().DownloadAsync(new PlatformPackDownloadRequest {
+                    Selection = selection,
+                    ProgramFilePath = firstCompilationUnit?.UnitFileName ?? CompilerOptions.SourceFileName
+                }).GetAwaiter().GetResult();
+                var assemblies = PlatformPackAssemblyResolver.Resolve(selection, cached);
+                var configuration = new PackageRestoreService().GetConfiguration(new PackageRestoreRequest {
+                    Packages = Array.Empty<NuGetPackageRequirement>(),
+                    ProgramFilePath = firstCompilationUnit?.UnitFileName ?? CompilerOptions.SourceFileName,
+                    LocalPackagesOnly = true
+                });
+                var runtimeGraph = PlatformPackRuntimeGraph.FromPacks(selection, cached, configuration);
+                var references = assemblies.Select(assembly => {
+                    var specification = new ReferenceSpec(assembly.Path, Path.GetDirectoryName(assembly.Path),
+                        unitFileName, null);
+                    return new PreparedReference(new ResolvedReference(specification, assembly.Path, false), assembly.Path);
+                }).ToArray();
+                // Publish nothing until the complete speculative reference set passes the
+                // normal conflict/unload checks. Keep ordinary package restore separate;
+                // merge runtime assets only after successful executable generation.
+                NetHelper.NetHelper.ValidateCollectibleReferencesForCompilation(
+                    packagePreparedReferences.Concat(references).Select(r => r.ResolvedReference.FileName));
+                platformAssemblyPaths = assemblies.ToDictionary(a => a.Name + ".dll", a => a.Path,
+                    StringComparer.OrdinalIgnoreCase);
+                platformPreparedReferences = references;
+                platformRuntimeGraph = runtimeGraph;
+                platformCompileReferencesPrepared = true;
+            }
+            catch (PackageRestoreException error)
+            {
+                throw new PackageRestoreFailed(FormatPackageRestoreFailure(error), unitFileName, null);
+            }
+            catch (Exception error) when (error is IOException || error is ArgumentException || error is NotSupportedException)
             {
                 throw new PackageRestoreFailed(error.Message, unitFileName, null);
             }
@@ -1135,7 +1195,8 @@ namespace PascalABCCompiler
 
         internal void PreparePcuReferences(IEnumerable<string> paths, string unitFileName)
         {
-            var availablePaths = paths.Where(p => p != null).ToArray();
+            var availablePaths = paths.Where(p => p != null)
+                .Concat(platformPreparedReferences.Select(r => r.ResolvedReference.FileName)).ToArray();
             try
             {
                 NetHelper.NetHelper.PrepareCollectibleReferenceSetForCompilation(availablePaths, availablePaths);
@@ -1301,6 +1362,10 @@ namespace PascalABCCompiler
             implicitSystemReferencePaths.Clear();
             preparedImplicitSystemReferences.Clear();
             packagePreparedReferences = Array.Empty<PreparedReference>();
+            platformCompileReferencesPrepared = false;
+            platformRuntimeGraph = null;
+            platformPreparedReferences = Array.Empty<PreparedReference>();
+            platformAssemblyPaths.Clear();
             packageAssemblyPaths.Clear();
             packageCompileAssets = Array.Empty<string>();
             packageCompileAssetSet.Clear();
@@ -1852,9 +1917,11 @@ namespace PascalABCCompiler
                             (CompilerOptions.OutputFileType == CompilerOptions.OutputType.ConsoleApplicaton ||
                              CompilerOptions.OutputFileType == CompilerOptions.OutputType.WindowsApplication))
                         {
-                            if (restoredPackageGraph != null)
+                            var runtimeGraph = platformRuntimeGraph == null ? restoredPackageGraph
+                                : PlatformPackRuntimeGraph.Merge(restoredPackageGraph, platformRuntimeGraph);
+                            if (runtimeGraph != null)
                                 PackageRuntimeManifestWriter.WriteForExecutable(
-                                    restoredPackageGraph, CompilerOptions.OutputFileName);
+                                    runtimeGraph, CompilerOptions.OutputFileName);
                             else
                                 PackageRuntimeManifestWriter.RemoveGeneratedManifest(
                                     CompilerOptions.OutputFileName);
@@ -3272,6 +3339,7 @@ namespace PascalABCCompiler
             // unit's interface or implementation is analysed. The prepared paths
             // stay in the NuGet cache; package runtime staging is a separate step.
             preparedReferences.AddRange(packagePreparedReferences);
+            preparedReferences.AddRange(platformPreparedReferences);
 #endif
 
 #if PABCNET_MODERN

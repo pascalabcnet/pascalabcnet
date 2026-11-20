@@ -66,6 +66,16 @@ internal static partial class Program
                 await CheckWindowsTarget(work);
                 return 0;
             }
+            if (args.Contains("--platform-pack-compilation"))
+            {
+                await CheckPlatformPackCompilation(work);
+                return 0;
+            }
+            if (args.Contains("--platform-pack-runtime"))
+            {
+                await CheckPlatformPackCompilation(work, runRuntime: true);
+                return 0;
+            }
             if (args.Contains("--win32-native-probing"))
             {
                 await CheckWin32NativeProbing(work);
@@ -304,8 +314,13 @@ internal static partial class Program
         string compiler = Path.Combine(Environment.GetEnvironmentVariable("PABC_NUGET_TEST_COMPILER_DIR")
             ?? Path.Combine(repository, "bin-net10"), "pabcnetcclear.exe");
         Check(File.Exists(compiler), "Build the modern console compiler before --target-windows.");
+        CreateEmptyWindowsPlatformFixture(feed, work);
         string source = Path.Combine(work, "windows-target.pas");
         string packageCache = Path.Combine(work, "compiler-packages");
+        HiddenRestoreDirectories.Add(service.GetConfiguration(new PackageRestoreRequest {
+            Packages = Array.Empty<PackageRequirement>(), ProgramFilePath = source,
+            Sources = new[] { feed }, PackagesDirectory = packageCache
+        }).RestoreDirectory);
         WriteConfiguration(Path.Combine(work, "NuGet.Config"), feed, packageCache);
         File.WriteAllText(source, "{$target windows}\n{$platform winforms}\n{$package " +
             packageId + " 1.0.0}\nbegin end.\n");
