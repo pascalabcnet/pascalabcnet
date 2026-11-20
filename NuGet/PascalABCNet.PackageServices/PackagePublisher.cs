@@ -37,6 +37,12 @@ public static class PackagePublisher
                 ?? throw new InvalidDataException("runtimeOptions is missing: " + runtimeConfig);
             var probing = options["additionalProbingPaths"] as JsonArray;
             options.Remove("additionalProbingPaths");
+            // Published native DLLs are beside the EXE, not in the original cache.
+            // A relocatable app-base marker also supports `dotnet app.exe` from
+            // another working directory (Win32's EXE directory would be dotnet's).
+            if (options["configProperties"] is JsonObject properties &&
+                properties.ContainsKey("PascalABCNET.NativeSearchPaths"))
+                properties["PascalABCNET.NativeSearchPaths"] = ".";
             File.WriteAllText(Path.Combine(staging, Path.GetFileName(runtimeConfig)),
                 config.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
 

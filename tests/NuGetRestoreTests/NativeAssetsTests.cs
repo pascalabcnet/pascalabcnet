@@ -79,6 +79,9 @@ internal static partial class Program
         File.WriteAllText(Path.ChangeExtension(executable, ".runtimeconfig.json"),
             "{\"runtimeOptions\":{\"tfm\":\"net10.0\",\"framework\":{\"name\":\"Microsoft.NETCore.App\",\"version\":\"10.0.0\"}}}");
         PackageRuntimeManifestWriter.WriteForExecutable(linuxGraph, executable);
+        using (var config = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.ChangeExtension(executable, ".runtimeconfig.json"))))
+            Check(!config.RootElement.GetProperty("runtimeOptions").TryGetProperty("configProperties", out var properties) ||
+                !properties.TryGetProperty("PascalABCNET.NativeSearchPaths", out _), "Linux must not receive a Win32 PATH setting.");
         string depsPath = Path.ChangeExtension(executable, ".deps.json");
         using (var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(depsPath)))
         {
@@ -89,6 +92,15 @@ internal static partial class Program
                 "The executable's manifest lost the selected Linux native file.");
         }
         PackageRuntimeManifestWriter.WriteForExecutable(graph, executable);
+        using (var config = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.ChangeExtension(executable, ".runtimeconfig.json"))))
+        {
+            var paths = config.RootElement.GetProperty("runtimeOptions").GetProperty("configProperties")
+                .GetProperty("PascalABCNET.NativeSearchPaths").GetString()!.Split(';');
+            var expected = graph.Packages.SelectMany(p => p.NativeLibraries).Select(p => Path.GetDirectoryName(p)!)
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+            Check(paths.Length == 2 && paths.ToHashSet(StringComparer.OrdinalIgnoreCase).SetEquals(expected),
+                "Win32 PATH must contain only RID-selected native directories, including transitive/fallback packages.");
+        }
         string originalManifest = Hash(depsPath);
         var escaping = graph with { Packages = graph.Packages.Select(package => package.Id == id
             ? package with { NativeLibraries = new[] { original } } : package).ToArray() };

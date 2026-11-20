@@ -66,6 +66,16 @@ internal static partial class Program
                 await CheckWindowsTarget(work);
                 return 0;
             }
+            if (args.Contains("--win32-native-probing"))
+            {
+                await CheckWin32NativeProbing(work);
+                return 0;
+            }
+            if (args.Contains("--sharp-assimp-native"))
+            {
+                await CheckSharpAssimpNative(work);
+                return 0;
+            }
             await CheckRestore(work);
             if (args.Contains("--native-assets"))
             {

@@ -880,6 +880,7 @@ namespace PascalABCCompiler.NETGenerator
                 cur_meth = entry_meth;
                 il = cur_meth.GetILGenerator();
 #if PABCNET_MODERN
+                EmitNativePackageSearchPaths(il);
                 // NET10-TESTFIX [fileof1, fileof2, typed files]: PABCSystem selects
                 // Windows-1251 as DefaultEncoding during module initialization. Modern
                 // .NET requires the code-pages provider to be registered beforehand.
@@ -12047,6 +12048,65 @@ namespace PascalABCCompiler.NETGenerator
             }
             il.Emit(OpCodes.Isinst, right);
         }
+
+#if PABCNET_MODERN
+        // .deps.json populates CoreCLR's native probing directories, but wrappers
+        // calling Win32 LoadLibrary directly bypass that probing. Append only the
+        // manifest writer's selected native package directories before unit startup.
+        // Do not replace the Win32 search policy, preload DLLs or change parent PATH.
+        private static void EmitNativePackageSearchPaths(ILGenerator generator)
+        {
+            var done = generator.DefineLabel();
+            var directories = generator.DeclareLocal(typeof(string));
+            generator.Emit(OpCodes.Call, typeof(OperatingSystem).GetMethod("IsWindows", Type.EmptyTypes));
+            generator.Emit(OpCodes.Brfalse, done);
+            generator.Emit(OpCodes.Ldstr, "PascalABCNET.NativeSearchPaths");
+            generator.Emit(OpCodes.Call, typeof(AppContext).GetMethod("GetData", new[] { typeof(string) }));
+            generator.Emit(OpCodes.Isinst, typeof(string));
+            generator.Emit(OpCodes.Stloc, directories);
+            generator.Emit(OpCodes.Ldloc, directories);
+            generator.Emit(OpCodes.Call, typeof(string).GetMethod("IsNullOrEmpty", new[] { typeof(string) }));
+            generator.Emit(OpCodes.Brtrue, done);
+            var resolvedDirectories = generator.DefineLabel();
+            generator.Emit(OpCodes.Ldloc, directories);
+            generator.Emit(OpCodes.Ldstr, ".");
+            generator.Emit(OpCodes.Call, typeof(string).GetMethod("op_Equality", new[] { typeof(string), typeof(string) }));
+            generator.Emit(OpCodes.Brfalse, resolvedDirectories);
+            generator.Emit(OpCodes.Call, typeof(AppContext).GetProperty("BaseDirectory").GetGetMethod());
+            generator.Emit(OpCodes.Stloc, directories);
+            generator.MarkLabel(resolvedDirectories);
+            // Remove trailing separators rather than introduce an empty
+            // PATH entry (which could enable an unintended working-directory probe).
+            generator.Emit(OpCodes.Ldloc, directories);
+            generator.Emit(OpCodes.Ldc_I4, (int)';');
+            generator.Emit(OpCodes.Callvirt, typeof(string).GetMethod("Trim", new[] { typeof(char) }));
+            generator.Emit(OpCodes.Stloc, directories);
+            generator.Emit(OpCodes.Ldloc, directories);
+            generator.Emit(OpCodes.Call, typeof(string).GetMethod("IsNullOrEmpty", new[] { typeof(string) }));
+            generator.Emit(OpCodes.Brtrue, done);
+            var oldPath = generator.DeclareLocal(typeof(string));
+            var noOldPath = generator.DefineLabel();
+            var setPath = generator.DefineLabel();
+            generator.Emit(OpCodes.Ldstr, "PATH");
+            generator.Emit(OpCodes.Call, typeof(Environment).GetMethod("GetEnvironmentVariable", new[] { typeof(string) }));
+            generator.Emit(OpCodes.Stloc, oldPath);
+            generator.Emit(OpCodes.Ldloc, oldPath);
+            generator.Emit(OpCodes.Call, typeof(string).GetMethod("IsNullOrEmpty", new[] { typeof(string) }));
+            generator.Emit(OpCodes.Brtrue, noOldPath);
+            generator.Emit(OpCodes.Ldloc, oldPath);
+            generator.Emit(OpCodes.Ldstr, ";");
+            generator.Emit(OpCodes.Ldloc, directories);
+            generator.Emit(OpCodes.Call, typeof(string).GetMethod("Concat", new[] { typeof(string), typeof(string), typeof(string) }));
+            generator.Emit(OpCodes.Stloc, directories);
+            generator.Emit(OpCodes.Br, setPath);
+            generator.MarkLabel(noOldPath);
+            generator.MarkLabel(setPath);
+            generator.Emit(OpCodes.Ldstr, "PATH");
+            generator.Emit(OpCodes.Ldloc, directories);
+            generator.Emit(OpCodes.Call, typeof(Environment).GetMethod("SetEnvironmentVariable", new[] { typeof(string), typeof(string) }));
+            generator.MarkLabel(done);
+        }
+#endif
 
         private void PushSize(Type t)
         {

@@ -106,6 +106,24 @@ public static class PackageRuntimeManifestWriter
             options["additionalProbingPaths"] = probing;
         }
         string packagesDirectory = Path.GetFullPath(graph.Configuration.PackagesDirectory);
+        // Direct Win32 LoadLibrary does not participate in CoreCLR's .deps probing.
+        // Carry only this graph's selected native directories into the executable's
+        // process bootstrap; never scan the cache or change the system/IDE PATH.
+        string[] nativeDirectories = graph.RuntimeIdentifier?.StartsWith("win-", StringComparison.Ordinal) == true
+            ? graph.Packages.SelectMany(p => p.NativeLibraries).Select(p => Path.GetDirectoryName(Path.GetFullPath(p))!)
+                .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToArray()
+            : Array.Empty<string>();
+        const string nativeSearchKey = "PascalABCNET.NativeSearchPaths";
+        var properties = options["configProperties"] as JsonObject;
+        if (nativeDirectories.Length != 0)
+        {
+            // A semicolon cannot be represented as one directory in a Windows PATH.
+            if (nativeDirectories.Any(p => p.Contains(';')))
+                throw new InvalidDataException("Native package directories must not contain a PATH separator.");
+            if (properties == null) options["configProperties"] = properties = new JsonObject();
+            properties[nativeSearchKey] = string.Join(';', nativeDirectories);
+        }
+        else properties?.Remove(nativeSearchKey);
         if (!probing.Any(path => string.Equals((string?)path, packagesDirectory,
                 OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)))
             probing.Add(packagesDirectory);
