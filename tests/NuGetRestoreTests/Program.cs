@@ -91,6 +91,11 @@ internal static partial class Program
                 await CheckSharpAssimpNative(work);
                 return 0;
             }
+            if (args.Contains("--custom-cache-native"))
+            {
+                await CheckCustomCacheNative(work);
+                return 0;
+            }
             await CheckRestore(work);
             if (args.Contains("--native-assets"))
             {
