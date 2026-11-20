@@ -91,21 +91,26 @@ internal static partial class Program
             "Native training did not recover after restoring the DLL.");
         Console.WriteLine("PASS: a missing manifest-listed cache DLL is rejected; restoring it recovers training.");
 
-        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-        var language = new PascalLanguageService("en", Path.Combine(kit, "Lib"));
-        string uri = new Uri(main).AbsoluteUri;
-        var analysis = await language.OpenOrUpdateDocumentAsync(uri, main, source);
-        Check(analysis.IsCompiled, "LightGBM IntelliSense failed: " + analysis.LastConversionError);
-        int caret = source.IndexOf("trainer.Fit", StringComparison.Ordinal) + "trainer.".Length;
-        Check((await language.GetCompletionAfterDotAsync(uri, caret)).Any(item => item.Label == "Fit"), "LightGBM completion omitted Fit.");
-        Check((await language.GetHoverAsync(uri, caret + 1))?.Contents.Contains("Fit") == true, "LightGBM hover failed.");
-        int signature = source.IndexOf("trainer.Fit(", StringComparison.Ordinal) + "trainer.Fit(".Length;
-        Check((await language.GetSignatureHelpAsync(uri, signature, '('))?.Signatures.Any(s => s.Label.Contains("Fit")) == true,
-            "LightGBM signature help failed.");
-        Check(!Process.GetCurrentProcess().Modules.Cast<ProcessModule>().Any(module => native.Any(path =>
-            string.Equals(Path.GetFileName(path), module.ModuleName, StringComparison.OrdinalIgnoreCase))),
-            "IntelliSense loaded native ML.NET/LightGBM code into its process.");
-        Console.WriteLine("PASS: LightGBM completion, hover and signature help without native execution in IntelliSense.");
+        // Semantic analysis may keep managed package assemblies (System.CodeDom)
+        // mapped until process exit. Isolate that test, not compiler/load behaviour,
+        // so the owner can really delete its private cache after the child exits.
+        var start = new ProcessStartInfo(Environment.ProcessPath!) {
+            UseShellExecute = false, RedirectStandardOutput = true,
+            RedirectStandardError = true, CreateNoWindow = true
+        };
+        if (Path.GetFileNameWithoutExtension(Environment.ProcessPath).Equals("dotnet", StringComparison.OrdinalIgnoreCase))
+            start.ArgumentList.Add(typeof(Program).Assembly.Location);
+        foreach (string argument in new[] { "--lightgbm-intellisense-child", kit, main }.Concat(native))
+            start.ArgumentList.Add(argument);
+        using (var child = Process.Start(start)!)
+        {
+            var output = child.StandardOutput.ReadToEndAsync();
+            var error = child.StandardError.ReadToEndAsync();
+            try { await child.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(120)); }
+            catch { if (!child.HasExited) child.Kill(entireProcessTree: true); throw; }
+            Check(child.ExitCode == 0, "LightGBM IntelliSense child failed: " + await output + await error);
+            Console.Write(await output);
+        }
 
         string published = PackagePublisher.Publish(executable, main, kit);
         Check(native.All(path => File.Exists(Path.Combine(published, Path.GetFileName(path)))), "Publication omitted native files.");
@@ -145,5 +150,25 @@ internal static partial class Program
         finally { Directory.Move(cache + ".hidden", cache); }
         Console.WriteLine("PASS: published native training and saved-model prediction without cache, SDK or PATH.");
         Console.WriteLine("PASS: without the published native DLL only training fails; saved-tree prediction works; restoration recovers training.");
+    }
+
+    private static async Task CheckLightGbmIntelliSense(string kit, string main, string[] native)
+    {
+        string source = File.ReadAllText(main);
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        var language = new PascalLanguageService("en", Path.Combine(kit, "Lib"));
+        string uri = new Uri(main).AbsoluteUri;
+        var analysis = await language.OpenOrUpdateDocumentAsync(uri, main, source);
+        Check(analysis.IsCompiled, "LightGBM IntelliSense failed: " + analysis.LastConversionError);
+        int caret = source.IndexOf("trainer.Fit", StringComparison.Ordinal) + "trainer.".Length;
+        Check((await language.GetCompletionAfterDotAsync(uri, caret)).Any(item => item.Label == "Fit"), "LightGBM completion omitted Fit.");
+        Check((await language.GetHoverAsync(uri, caret + 1))?.Contents.Contains("Fit") == true, "LightGBM hover failed.");
+        int signature = source.IndexOf("trainer.Fit(", StringComparison.Ordinal) + "trainer.Fit(".Length;
+        Check((await language.GetSignatureHelpAsync(uri, signature, '('))?.Signatures.Any(s => s.Label.Contains("Fit")) == true,
+            "LightGBM signature help failed.");
+        Check(!Process.GetCurrentProcess().Modules.Cast<ProcessModule>().Any(module => native.Any(path =>
+            string.Equals(Path.GetFileName(path), module.ModuleName, StringComparison.OrdinalIgnoreCase))),
+            "IntelliSense loaded native ML.NET/LightGBM code into its process.");
+        Console.WriteLine("PASS: LightGBM completion, hover and signature help without native execution in IntelliSense.");
     }
 }

@@ -26,6 +26,11 @@ internal static partial class Program
         Directory.CreateDirectory(work);
         try
         {
+            if (args.Contains("--lightgbm-intellisense-child"))
+            {
+                await CheckLightGbmIntelliSense(args[1], args[2], args.Skip(3).ToArray());
+                return 0;
+            }
             if (args.Contains("--hold-restore-lock"))
             {
                 await NuGet.Common.ConcurrencyUtilities.ExecuteWithFileLockedAsync(
