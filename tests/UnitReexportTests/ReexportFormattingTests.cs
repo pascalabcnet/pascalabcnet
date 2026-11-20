@@ -12,6 +12,25 @@ internal static class ReexportFormattingTests
     {
         foreach (string newline in new[] { "\n", "\r\n" })
         {
+            foreach (bool simple in new[] { false, true })
+            {
+                const string inline = "uses ReexportOrigin export F1, {keep inline comment} F2 as FFF2;";
+                string inlineSource = "unit FormatReexport;" + newline +
+                    (simple ? "" : "interface" + newline) + inline + newline +
+                    "uses System;" + newline +
+                    "export ReexportOrigin.Hidden as Kept;" + newline +
+                    (simple ? "" : "implementation" + newline) + "end.";
+                string inlineFormatted = new CodeFormatter(2).FormatTree(
+                    inlineSource, Parse(language, inlineSource), 1, 1);
+                Check(inlineFormatted.Contains(inline), "preserve inline export and its comment: " + inlineFormatted);
+                var reparsed = Parse(language, inlineFormatted);
+                var clauses = ((uses_closure)reparsed.interface_part.uses_modules).listunitsections;
+                Check(clauses.Count == 2 && clauses[0].HasInlineReexports && !clauses[1].HasInlineReexports,
+                    "preserve inline and ordinary uses clauses");
+                Check(Exports(reparsed).SequenceEqual(new[] { ("ReexportOrigin", "Hidden", "Kept") }),
+                    "preserve standalone export after inline uses");
+            }
+
             string source = string.Join(newline, new[]
             {
                 "unit FormatReexport;",

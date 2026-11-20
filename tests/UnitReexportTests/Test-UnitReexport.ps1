@@ -171,20 +171,68 @@ foreach ($target in @('net472', 'net10')) {
             Invoke-Compile $file "$($case.Name).exe" $expected
         }
 
+        foreach ($simple in @($false, $true)) {
+            $unit = if ($simple) { 'InlineSimpleFacade' } else { 'InlineExportFacade' }
+            $header = if ($simple) { @("unit $unit;") } else { @("unit $unit;", 'interface') }
+            $ending = if ($simple) { @('end.') } else { @('implementation', 'end.') }
+            [IO.File]::WriteAllLines((Join-Path $dir "$unit.pas"), ($header + @(
+                'uses System;',
+                'uses ReexportOrigin export F1, F2 as FFF2, TOriginBox as PublicBox, Identity as Same;',
+                'uses ReexportBridge export ChainedPoint as PublicPoint;',
+                'export ReexportOrigin.OriginCount as PublicCount;'
+            ) + $ending))
+            [IO.File]::WriteAllLines((Join-Path $dir "${unit}Client.pas"), @(
+                "uses $unit;", 'begin', '  assert(F1(10) = 11);',
+                "  assert($unit.F1('abc') = 3);", '  var n := 0;', "  $unit.FFF2(n);",
+                '  assert(n = 2);', '  var p: PublicPoint;', '  p.X := 17;',
+                '  assert(p.X = 17);', '  assert(PublicCount = 7);',
+                "  assert($unit.Same&<integer>(73) = 73);",
+                '  var box := new PublicBox<integer>;', '  box.Value := 23;', '  assert(box.Value = 23);', 'end.'
+            ))
+            Invoke-TestProgram "${unit}Client.pas" "${unit}FromSource.exe"
+        }
+
+        foreach ($case in @(
+            @{ Name = 'InlineMultipleUnits'; Lines = @('interface', 'uses ReexportOrigin, System export F1;', 'implementation', 'end.') },
+            @{ Name = 'InlineSimpleMultipleUnits'; Lines = @('uses ReexportOrigin, System export F1;', 'end.') },
+            @{ Name = 'InlineImplementation'; Lines = @('interface', 'implementation', 'uses ReexportOrigin export F1;', 'end.') },
+            @{ Name = 'InlineQualifiedName'; Lines = @('interface', 'uses ReexportOrigin export ReexportOrigin.F1;', 'implementation', 'end.') }
+        )) {
+            $file = "$($case.Name).pas"
+            [IO.File]::WriteAllLines((Join-Path $dir $file), (@("unit $($case.Name);") + $case.Lines))
+            Invoke-Compile $file "$($case.Name).exe" "${file}:"
+        }
+        [IO.File]::WriteAllLines((Join-Path $dir 'InlineProgram.pas'), @(
+            'uses ReexportOrigin export F1;', 'begin end.'
+        ))
+        Invoke-Compile 'InlineProgram.pas' 'InlineProgram.exe' 'InlineProgram.pas:'
+
         Invoke-Client 'FromSource.exe'
         $sourceDir = $dir
         $pcuDir = Join-Path $dir 'pcu-only'
         New-Item -ItemType Directory -Path $pcuDir | Out-Null
-        foreach ($unit in @('ReexportOrigin', 'ReexportFacade', 'ReexportBridge', 'SimpleExportFacade')) {
+        foreach ($unit in @('ReexportOrigin', 'ReexportFacade', 'ReexportBridge', 'SimpleExportFacade',
+                            'InlineExportFacade', 'InlineSimpleFacade')) {
             if (!(Test-Path -LiteralPath "$unit.pcu")) { throw "Missing fresh $unit.pcu" }
             Copy-Item -LiteralPath "$unit.pcu" -Destination $pcuDir
         }
         Copy-Item -LiteralPath 'ReexportClient.pas' -Destination $pcuDir
         Copy-Item -LiteralPath 'SimpleExportClient.pas' -Destination $pcuDir
+        foreach ($unit in @('InlineExportFacade', 'InlineSimpleFacade')) {
+            Copy-Item -LiteralPath "${unit}Client.pas" -Destination $pcuDir
+        }
         $dir = $pcuDir
         Set-Location -LiteralPath $dir
         Invoke-Client 'FromPcu.exe'
         Invoke-TestProgram 'SimpleExportClient.pas' 'SimpleFromPcu.exe'
+        foreach ($unit in @('InlineExportFacade', 'InlineSimpleFacade')) {
+            Invoke-TestProgram "${unit}Client.pas" "${unit}FromPcu.exe"
+            [IO.File]::WriteAllText((Join-Path $dir 'InlineHidden.pas'), "uses $unit; begin Println(Hidden); end.")
+            Invoke-Compile 'InlineHidden.pas' 'InlineHidden.exe' 'Hidden'
+            [IO.File]::WriteAllText((Join-Path $dir 'InlineOriginalName.pas'),
+                "uses $unit; begin var n := 0; $unit.F2(n); end.")
+            Invoke-Compile 'InlineOriginalName.pas' 'InlineOriginalName.exe' 'F2'
+        }
         [IO.File]::WriteAllText((Join-Path $dir 'HiddenClient.pas'),
             'uses ReexportFacade; begin assert(Hidden = 42); end.')
         Invoke-Compile 'HiddenClient.pas' 'HiddenClient.exe' 'Hidden'

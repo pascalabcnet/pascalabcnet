@@ -964,6 +964,9 @@ namespace PascalABCCompiler.SyntaxTree
             Add(new unit_or_namespace(name), sc);
         }
 
+        // Formatter-only marker; semantic trees use ordinary unit_reexport declarations.
+        public bool HasInlineReexports { get; set; }
+
         public uses_list AddUsesList(uses_list ul, SourceContext sc = null)
         {
             foreach (var un in ul.units)

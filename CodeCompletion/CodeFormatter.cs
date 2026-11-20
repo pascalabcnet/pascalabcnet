@@ -1704,6 +1704,13 @@ namespace CodeFormatters
 
         public override void visit(uses_list _uses_list)
         {
+            if (_uses_list.HasInlineReexports)
+            {
+                WriteNode(_uses_list);
+                insert_newline_after_prev = true;
+                return;
+            }
+
             //sb.Append("uses");
             IncOffset(tab);
             //if (!in_one_row(_uses_list))

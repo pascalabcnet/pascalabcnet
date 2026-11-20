@@ -113,6 +113,7 @@
 %type <stn> implementation_part  
 %type <stn> interface_part abc_interface_part  
 %type <stn> interface_declarations
+%type <stn> interface_uses_clause_one interface_uses_clause_nonempty inline_reexport_list inline_reexport_item
 %type <stn> simple_unit_declarations simple_unit_decl_list simple_unit_decl
 %type <stn> simple_type_list  
 %type <ex> literal one_literal
@@ -455,19 +456,63 @@ unit_name
     ;
 
 interface_part
-    : tkInterface uses_clause_nonempty interface_declarations
+    : tkInterface interface_uses_clause_nonempty interface_declarations
         {
-            $$ = new interface_node((declarations)$3, (uses_list)$2, null, LexLocation.MergeAll(@1,@2,@3));
+            var imports = (interface_node)$2;
+            var defs = (declarations)$3;
+            defs.defs.InsertRange(0, imports.interface_definitions.defs);
+            $$ = new interface_node(defs, imports.uses_modules, null, LexLocation.MergeAll(@1,@2,@3));
         }
     | tkInterface interface_declarations
         {
             $$ = new interface_node((declarations)$2, null, null, LexLocation.MergeAll(@1,@2));
         }
-    | tkInterface unit_reexport_nonempty uses_clause_nonempty unit_reexport_clauses interface_decl_sect_list
+    | tkInterface unit_reexport_nonempty interface_uses_clause_nonempty unit_reexport_clauses interface_decl_sect_list
         {
             parserTools.AddErrorFromResource("REEXPORT_BEFORE_USES", @2);
-            $$ = new interface_node((declarations)$5, (uses_list)$3, null, @$);
+            $$ = new interface_node((declarations)$5, ((interface_node)$3).uses_modules, null, @$);
         }
+    ;
+
+// Kept separate from uses_clause: this syntax is not available in programs,
+// implementation sections or local declarations.
+interface_uses_clause_nonempty
+    : interface_uses_clause_one
+        {
+            var imports = (interface_node)$1;
+            if (parserTools.buildTreeForFormatter)
+                imports.uses_modules = new uses_closure(imports.uses_modules, @1);
+            $$ = imports;
+        }
+    | interface_uses_clause_nonempty interface_uses_clause_one
+        {
+            var imports = (interface_node)$1;
+            var next = (interface_node)$2;
+            if (parserTools.buildTreeForFormatter)
+                ((uses_closure)imports.uses_modules).Add(next.uses_modules, @$);
+            else
+                imports.uses_modules.AddUsesList(next.uses_modules, @$);
+            imports.interface_definitions.defs.AddRange(next.interface_definitions.defs);
+            $$ = imports;
+        }
+    ;
+
+interface_uses_clause_one
+    : uses_clause_one
+        { $$ = new interface_node(new declarations(), (uses_list)$1, null, @$); }
+    | tkUses used_unit_name tkExport inline_reexport_list tkSemiColon
+        { $$ = NewInlineReexportClause((unit_or_namespace)$2, (declarations)$4, @$); }
+    ;
+
+inline_reexport_list
+    : inline_reexport_item { $$ = new declarations().Add((declaration)$1, @$); }
+    | inline_reexport_list tkComma inline_reexport_item
+        { $$ = ((declarations)$1).Add((declaration)$3, @$); }
+    ;
+
+inline_reexport_item
+    : identifier { $$ = new unit_reexport(null, $1, null, @$); }
+    | identifier tkAs identifier { $$ = new unit_reexport(null, $1, $3, @$); }
     ;
 
 interface_declarations
@@ -520,18 +565,21 @@ implementation_part
 	;
 		
 abc_interface_part
-    : uses_clause_nonempty simple_unit_declarations
+    : interface_uses_clause_nonempty simple_unit_declarations
         {
-            $$ = new interface_node((declarations)$2, (uses_list)$1, null, null);
+            var imports = (interface_node)$1;
+            var defs = (declarations)$2;
+            defs.defs.InsertRange(0, imports.interface_definitions.defs);
+            $$ = new interface_node(defs, imports.uses_modules, null, null);
         }
     | simple_unit_declarations
         {
             $$ = new interface_node((declarations)$1, null, null, null);
         }
-    | unit_reexport_nonempty uses_clause_nonempty unit_reexport_clauses simple_unit_decl_list
+    | unit_reexport_nonempty interface_uses_clause_nonempty unit_reexport_clauses simple_unit_decl_list
         {
             parserTools.AddErrorFromResource("REEXPORT_BEFORE_USES", @1);
-            $$ = new interface_node((declarations)$4, (uses_list)$2, null, null);
+            $$ = new interface_node((declarations)$4, ((interface_node)$2).uses_modules, null, null);
         }
     ;
 

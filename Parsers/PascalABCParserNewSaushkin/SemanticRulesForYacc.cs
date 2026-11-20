@@ -65,6 +65,24 @@ namespace Languages.Pascal.Frontend.Core
             return un;
         }
 
+        private interface_node NewInlineReexportClause(unit_or_namespace unit, declarations exports, LexLocation loc)
+        {
+            var uses = new uses_list(unit, loc);
+            var definitions = new declarations();
+            if (parserTools.buildTreeForFormatter)
+                uses.HasInlineReexports = true;
+            else
+            {
+                // Lower to the existing export representation. No new syntax nodes or PCU records.
+                var unitName = PascalABCCompiler.SyntaxTree.Utils.IdentListToString(unit.name.idents, ".");
+                foreach (unit_reexport entry in exports.defs)
+                    definitions.Add(new unit_reexport(
+                        new ident(unitName, unit.name.source_context), entry.source_name,
+                        entry.export_name, entry.source_context), entry.source_context);
+            }
+            return new interface_node(definitions, uses, null, loc);
+        }
+
         public unit_name NewNamespaceHeading(ident unitkeyword, ident_list nname, LexLocation loc)
         {
             StringBuilder sb = new StringBuilder();
