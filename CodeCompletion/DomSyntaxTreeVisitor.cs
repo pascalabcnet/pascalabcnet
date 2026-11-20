@@ -2648,6 +2648,7 @@ namespace CodeCompletion
             AddNetCorePlatformReferences(unit_scope, namespaces, _as, _unit_module.compiler_directives);
 #else
             AddFrameworkCoreReferences(unit_scope);
+            AddFrameworkPlatformReferences(unit_scope, namespaces, _unit_module.compiler_directives);
 #endif
             this.cur_unit_file_name = _unit_module.file_name;
             //if (XmlDoc.LookupLocalizedXmlDocForUnitWithSources(_unit_module.file_name) != null)
@@ -3301,6 +3302,7 @@ namespace CodeCompletion
             AddNetCorePlatformReferences(unit_scope, namespaces, _as, _program_module.compiler_directives);
 #else
             AddFrameworkCoreReferences(unit_scope);
+            AddFrameworkPlatformReferences(unit_scope, namespaces, _program_module.compiler_directives);
 #endif
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
@@ -3520,6 +3522,35 @@ namespace CodeCompletion
         }
 
 #if PABCNET_LEGACY
+        private static void AddFrameworkPlatformReferences(InterfaceUnitScope unitScope,
+            List<string> namespaces, IEnumerable<PascalABCCompiler.SyntaxTree.compiler_directive> directives)
+        {
+            if (directives == null)
+                return;
+            foreach (var directive in directives)
+            {
+                if (!string.Equals(directive.Name.text, StringConstants.compiler_directive_platform,
+                    StringComparison.OrdinalIgnoreCase))
+                    continue;
+                string[] libraries;
+                if (string.Equals(directive.Directive.text, "wpf", StringComparison.OrdinalIgnoreCase))
+                    libraries = new[] { "PresentationFramework.dll", "PresentationCore.dll", "WindowsBase.dll" };
+                else
+                    continue;
+                foreach (string library in libraries)
+                {
+                    string path = Compiler.get_assembly_path("%GAC%\\" + library, true);
+                    if (path == null)
+                        continue;
+                    Assembly assembly = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
+                    if (assembly == null)
+                        continue;
+                    AddFrameworkReference(unitScope, assembly);
+                    namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assembly));
+                }
+            }
+        }
+
         private void AddFrameworkCoreReferences(InterfaceUnitScope unitScope)
         {
             if (currentUnitLanguage != Languages.Facade.LanguageProvider.Instance.MainLanguage)
