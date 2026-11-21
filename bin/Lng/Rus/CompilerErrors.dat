@@ -32,6 +32,7 @@ PACKAGE_DEPENDENCY_RANGE_UNSATISFIED{0}{1}{2}{3}=Пакет '{0}' требует
 PACKAGE_DEPENDENCY_RESOLVED{0}{1}{2}=NuGet: для зависимости '{0}' выбрана версия {1}; ограничения: {2}.
 PACKAGE_REQUIRES_RUNTIME_ASSEMBLY{0}=Пакет NuGet '{0}' содержит только reference-сборки; для семантического анализа компилятору требуется исполняемая сборка.
 PACKAGE_DUPLICATE_ASSEMBLY{0}=Пакеты NuGet содержат две различные сборки с именем '{0}'.
+PACKAGE_NATIVE_CONFLICT{0}{1}{2}{3}{4}=Нативные файлы с именем '{0}' имеют разное содержимое: пакет NuGet '{1}', путь '{2}'; пакет NuGet '{3}', путь '{4}'.
 PACKAGE_RESTORE_FAILED{0}=Не удалось восстановить пакеты NuGet: {0}
 PACKAGE_NOT_FOUND{0}=Пакет NuGet не найден в настроенных источниках. Проверьте имя пакета и NuGet.Config. Подробности: {0}
 PACKAGE_VERSION_UNAVAILABLE{0}=Запрошенная версия пакета NuGet недоступна. Проверьте номер версии или выберите доступную версию. Подробности: {0}

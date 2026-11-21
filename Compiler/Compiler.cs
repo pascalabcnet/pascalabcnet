@@ -1008,6 +1008,7 @@ namespace PascalABCCompiler
                                 origin?.source_file ?? unitFileName, origin == null ? null : GetSourceContext(origin));
                         }
                     }
+                ValidateNativePackageFiles(graph, unitFileName, firstAddition.Origin);
                 var references = PreparePackageSemanticReferences(graph, unitFileName,
                     firstAddition.Origin, out var assemblyPaths);
                 NetHelper.NetHelper.ValidateCollectibleReferencesForCompilation(
@@ -1066,6 +1067,23 @@ namespace PascalABCCompiler
             catch (FileLoadException error)
             {
                 throw new PackageRestoreFailed(error.Message, unitFileName, null);
+            }
+        }
+
+        private void ValidateNativePackageFiles(ResolvedPackageGraph graph, string unitFileName, compiler_directive origin)
+        {
+            try { NativePackageConflictValidator.Validate(graph); }
+            catch (NativePackageConflictException error)
+            {
+                throw new PackageRestoreFailed(string.Format(StringResources.Get("COMPILATIONERROR_PACKAGE_NATIVE_CONFLICT{0}{1}{2}{3}{4}"),
+                    error.FileName, error.FirstPackage.Id + "/" + error.FirstPackage.Version, error.FirstPath,
+                    error.SecondPackage.Id + "/" + error.SecondPackage.Version, error.SecondPath),
+                    origin?.source_file ?? unitFileName, origin == null ? null : GetSourceContext(origin));
+            }
+            catch (IOException error)
+            {
+                throw new PackageRestoreFailed(error.Message, origin?.source_file ?? unitFileName,
+                    origin == null ? null : GetSourceContext(origin));
             }
         }
 
@@ -1911,6 +1929,12 @@ namespace PascalABCCompiler
                         if (CompilerOptions.UseDllForSystemUnits)
                             netCompilerOptions.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
 
+#if PABCNET_MODERN
+                        var nativeGraph = platformRuntimeGraph == null ? restoredPackageGraph
+                            : PlatformPackRuntimeGraph.Merge(restoredPackageGraph, platformRuntimeGraph);
+                        if (nativeGraph != null)
+                            ValidateNativePackageFiles(nativeGraph, CompilerOptions.SourceFileName, null);
+#endif
                         GenerateILCode(semanticTree, netCompilerOptions, resourceFiles);
 #if PABCNET_MODERN
                         if (!CompilerOptions.ForIntellisense &&

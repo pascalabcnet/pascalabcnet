@@ -32,6 +32,7 @@ PACKAGE_DEPENDENCY_RANGE_UNSATISFIED{0}{1}{2}{3}=Package '{0}' requires '{1}' {2
 PACKAGE_DEPENDENCY_RESOLVED{0}{1}{2}=NuGet: dependency '{0}' resolved to {1}; constraints: {2}.
 PACKAGE_REQUIRES_RUNTIME_ASSEMBLY{0}=NuGet package '{0}' has only reference assemblies; the compiler needs a runtime assembly for semantic analysis.
 PACKAGE_DUPLICATE_ASSEMBLY{0}=NuGet packages contain two different assemblies named '{0}'.
+PACKAGE_NATIVE_CONFLICT{0}{1}{2}{3}{4}=Native files named '{0}' have different contents: NuGet package '{1}', path '{2}'; NuGet package '{3}', path '{4}'.
 PACKAGE_RESTORE_FAILED{0}=NuGet package restore failed: {0}
 PACKAGE_NOT_FOUND{0}=NuGet package was not found in the configured sources. Check the package ID and NuGet.Config. Details: {0}
 PACKAGE_VERSION_UNAVAILABLE{0}=The requested NuGet package version is unavailable. Check the version or select an available one. Details: {0}

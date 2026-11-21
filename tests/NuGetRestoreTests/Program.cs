@@ -96,6 +96,11 @@ internal static partial class Program
                 await CheckCustomCacheNative(work);
                 return 0;
             }
+            if (args.Contains("--native-conflicts"))
+            {
+                await CheckNativeConflicts(work);
+                return 0;
+            }
             await CheckRestore(work);
             if (args.Contains("--native-assets"))
             {
