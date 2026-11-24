@@ -22,12 +22,12 @@ namespace CodeCompletion
             int line,
             int column)
         {
-            if (language == null || domConverter == null)
+            if (language == null)
                 return null;
 
             // Do not describe a routine or value as an expression when the parser
             // found its name in a type reference that did not resolve to a type.
-            if (domConverter.visitor.IsNonTypeReference(text, offset, line, column))
+            if (domConverter != null && domConverter.visitor.IsNonTypeReference(text, offset, line, column))
                 return null;
 
             PascalABCCompiler.Contracts.Parsers.KeywordKind keyword;
@@ -73,7 +73,7 @@ namespace CodeCompletion
             {
                 // A qualified implementation header such as T<U>.P is not a Pascal expression.
                 // Use the resolved method only when the cursor is on its name in that header.
-                if (domConverter.visitor.FindScopeByLocation(line + 1, column + 1) is ProcRealization method &&
+                if (domConverter != null && domConverter.visitor.FindScopeByLocation(line + 1, column + 1) is ProcRealization method &&
                     method.IsInScope(method.methodNameLocation, line + 1, column + 1))
                 {
                     string methodName = method.def_proc.si.name;
@@ -92,8 +92,25 @@ namespace CodeCompletion
                 expression = expressionWithoutBracketsTree;
             }
 
-            return domConverter.GetDescription(
+            string description = domConverter == null ? null : domConverter.GetDescription(
                 expression, fileName, expressionWithoutBrackets, line, column, keyword, useHeader);
+            if (!string.IsNullOrEmpty(description) ||
+                !ReferenceEquals(language, LanguageProvider.Instance.MainLanguage) ||
+                !(expressionWithoutBracketsTree is PascalABCCompiler.SyntaxTree.dot_node))
+                return description;
+
+            int calleeEnd = offset;
+            while (calleeEnd < text.Length && (char.IsLetterOrDigit(text[calleeEnd]) || text[calleeEnd] == '_'))
+                calleeEnd++;
+            int next = calleeEnd;
+            while (next < text.Length && char.IsWhiteSpace(text[next]))
+                next++;
+            if (next == text.Length || text[next] != '(')
+                return description;
+
+            var recovered = CodeCompletionController.CompileCallPrefix(domConverter, fileName, text, calleeEnd);
+            return recovered == null ? description : recovered.GetDescription(
+                expressionWithoutBracketsTree, fileName, expressionWithoutBrackets, line, column, keyword, true);
         }
     }
 }

@@ -280,6 +280,9 @@ namespace ICSharpCode.TextEditor.Util
 			base.OnMaximumSizeChanged();
 			
 			if (IsTextVisible()) {
+				if (insight_wnd && len_bold > 0 && TryMeasureSingleLineInsightText())
+					return;
+
 				SizeF tmp = Graphics.MeasureString
 					("a", new Font(tipFont, FontStyle.Bold), MaximumSize,
 					 GetInternalStringFormat());
@@ -320,6 +323,24 @@ namespace ICSharpCode.TextEditor.Util
 				SetRequiredSizeInternal(tipSize);
 			} else {
 				SetRequiredSize(SizeF.Empty);
+			}
+		}
+
+		private bool TryMeasureSingleLineInsightText()
+		{
+			using (var boldFont = new Font(tipFont, FontStyle.Bold))
+			using (var singleLine = (StringFormat)GetInternalStringFormat().Clone())
+			{
+				singleLine.FormatFlags |= StringFormatFlags.NoWrap;
+				SizeF before = Graphics.MeasureString(tipText.Substring(0, beg_bold), tipFont, PointF.Empty, singleLine);
+				SizeF active = Graphics.MeasureString(tipText.Substring(beg_bold, len_bold), boldFont, PointF.Empty, singleLine);
+				SizeF after = Graphics.MeasureString(tipText.Substring(beg_bold + len_bold), tipFont, PointF.Empty, singleLine);
+				float width = before.Width + active.Width + after.Width;
+				if (width > MaximumSize.Width)
+					return false;
+
+				SetRequiredSize(new SizeF(width, Math.Max(active.Height, Math.Max(before.Height, after.Height))));
+				return true;
 			}
 		}
 		

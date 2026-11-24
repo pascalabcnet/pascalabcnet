@@ -36,6 +36,24 @@ namespace CodeCompletion
     /// </summary>
     public static class SignatureHelpService
     {
+        public static int FindParameterListStart(string signature)
+        {
+            int open = signature.IndexOf('(');
+            if (open != 0)
+                return open;
+
+            // The signature of an extension starts with a parenthesized receiver description.
+            int depth = 1;
+            for (int i = 1; i < signature.Length; i++)
+            {
+                if (signature[i] == '(')
+                    depth++;
+                else if (signature[i] == ')' && --depth == 0)
+                    return signature.IndexOf('(', i + 1);
+            }
+            return -1;
+        }
+
         /// <summary>
         /// Calculates signature help using the legacy editor contract:
         /// <paramref name="caretOffset"/> points to the trigger character, while line and
@@ -53,7 +71,7 @@ namespace CodeCompletion
             int currentParameter,
             int currentParameterForSelection)
         {
-            if (language == null || domConverter == null)
+            if (language == null)
                 return null;
 
             var expressionText = language.LanguageIntellisenseSupport.FindExpressionForMethod(
@@ -79,19 +97,24 @@ namespace CodeCompletion
             if (language.LanguageIntellisenseSupport.IsOpenBracketForMethodCall(triggerCharacter) ||
                 language.LanguageIntellisenseSupport.IsMethodCallParameterSeparator(triggerCharacter))
             {
-                signatures = domConverter.GetNameOfMethod(
-                    expression,
-                    expressionText,
-                    line,
-                    column,
-                    currentParameter,
-                    ref defaultIndex,
-                    currentParameterForSelection,
-                    out parameterCount);
+                if (domConverter != null)
+                    signatures = domConverter.GetNameOfMethod(expression, expressionText, line, column,
+                        currentParameter, ref defaultIndex, currentParameterForSelection, out parameterCount);
+
+                if ((signatures == null || signatures.Length == 0) && triggerCharacter == '(' &&
+                    ReferenceEquals(language, LanguageProvider.Instance.MainLanguage) &&
+                    expression is PascalABCCompiler.SyntaxTree.dot_node)
+                {
+                    var recovered = CodeCompletionController.CompileCallPrefix(domConverter, fileName, textBeforeCaret, caretOffset);
+                    if (recovered != null)
+                        signatures = recovered.GetNameOfMethod(expression, expressionText, line, column,
+                            currentParameter, ref defaultIndex, currentParameterForSelection, out parameterCount);
+                }
             }
             else if (language.LanguageIntellisenseSupport.IsOpenBracketForIndex(triggerCharacter))
             {
-                signatures = domConverter.GetIndex(expression, line, column);
+                if (domConverter != null)
+                    signatures = domConverter.GetIndex(expression, line, column);
             }
 
             return new SignatureHelpResult(

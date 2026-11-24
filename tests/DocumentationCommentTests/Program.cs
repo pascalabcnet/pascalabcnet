@@ -15,6 +15,7 @@ internal static class Program
         var language = PascalLanguageRegistration.RegisterPascalLanguage();
         CodeCompletionBootstrap.Initialize("ru");
         CheckTypeAndConstructor(language);
+        CheckEnumDocumentation(language);
         foreach (string ending in new[] { "CRLF", "LF", "mixed", "mixed-reverse" })
         foreach (bool period in new[] { false, true })
         {
@@ -75,6 +76,25 @@ internal static class Program
     {
         if (!condition) throw new InvalidOperationException(message);
         Console.WriteLine("PASS " + message);
+    }
+
+    private static void CheckEnumDocumentation(Languages.Facade.ILanguage language)
+    {
+        const string typeDoc = "Documentation for the enum type.";
+        const string memberDoc = "Documentation for the enum value.";
+        const string fileName = "EnumDoc.pas";
+        string source = "type\n  /// " + typeDoc + "\n  NormType = (L1, L2);\n" +
+            "  OtherType = (\n    /// " + memberDoc + "\n    FirstValue, SecondValue);\n" +
+            "begin\n  var norm := NormType.L2;\n  var other := OtherType.FirstValue;\nend.";
+        var errors = new List<Error>();
+        var tree = language.Parser.GetCompilationUnit(fileName, source, errors,
+            new List<CompilerWarning>(), ParseMode.Normal, false);
+        Check(tree != null && errors.Count == 0, "enum documentation fixture parses");
+        var docs = new DocumentationConstructor().Construct(tree, language.DocParser.BuildTree(source));
+        Check(docs.Count == 2 &&
+            docs.Any(pair => pair.Key is PascalABCCompiler.SyntaxTree.type_declaration && pair.Value == typeDoc) &&
+            docs.Any(pair => pair.Key is PascalABCCompiler.SyntaxTree.enumerator && pair.Value == memberDoc),
+            "enum documentation stays on the type and explicitly documented values");
     }
 
     private static void CheckTypeAndConstructor(Languages.Facade.ILanguage language)

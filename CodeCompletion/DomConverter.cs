@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.IO;
 using PascalABCCompiler.SyntaxTree;
@@ -38,6 +39,7 @@ namespace CodeCompletion
         public DomSyntaxTreeVisitor visitor;
         //TreeConverterSymbolTable tcst;
         public CodeCompletionController controller;
+        internal bool PublishModule { get; set; } = true;
         public bool is_compiled = false;
         private Exception preparationError;
 #if PABCNET_MODERN
@@ -1168,94 +1170,79 @@ namespace CodeCompletion
                     return null;
             }
             SetCurrentUsedAssemblies();
-            ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
-            List<ProcScope> scopes = ev.GetOverloadScopes();
-            if (scopes.Count == 0)
+            try
             {
-                RestoreCurrentUsedAssemblies();
-                return null;
-            }
-            si = scopes[0];
-            if (si != null && si is ProcScope)
-            {
-                scopes.ForEach(sc => sc = (ProcScope)sc.WithRefreshedDescription());
+                ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
+                List<ProcScope> scopes = ev.GetOverloadScopes();
+                if (scopes == null)
+                    return null;
 
-                List<string> procs = new List<string>();
                 List<ProcScope> proc_defs = new List<ProcScope>();
-                ProcScope ps = si as ProcScope;
-                int i = 0; bool stop = false;
-                ProcScope tmp = ps;
-                while (i < scopes.Count)
+                foreach (ProcScope ps in scopes)
                 {
-                    if (i == defIndex)
-                    {
-                        if (tmp.GetParametersCount() != 0)
-                        {
-                            choose_param_num = tmp.GetParametersCount();
-                            param_count = choose_param_num;
-                        }
-                        break;
-                    }
-                    i++;
-                    tmp = scopes[i];
-                }
-                i = 0;
-                while (ps != null)
-                {
-                    if (!stop && num_param > choose_param_num && ps.GetParametersCount() >= num_param && ps.GetParametersCount() > choose_param_num)
-                    {
-                        defIndex = i;
-                        stop = true;
-                        param_count = ps.GetParametersCount();
-                    }
+                    if (ps == null)
+                        continue;
+                    if (ps.acc_mod == access_modifer.private_modifer && !ev.IsInOneModule(ev.entry_scope, ps.topScope))
+                        continue;
+                    if (ps.acc_mod == access_modifer.protected_modifer && !ev.CheckForBaseAccess(ev.entry_scope, ps.topScope))
+                        continue;
+
+                    ps.WithRefreshedDescription();
                     if (ps is CompiledMethodScope)
                         ps.AddDocumentation(AssemblyDocCache.GetDocumentation((ps as CompiledMethodScope).mi));
                     else if (ps is CompiledConstructorScope)
                         ps.AddDocumentation(AssemblyDocCache.GetDocumentation((ps as CompiledConstructorScope).mi));
-                    else if (ps is ProcScope)
-                    {
-                        if (!ps.si.has_doc)
-                        {
-                            ps.AddDocumentation(UnitDocCache.GetDocumentation(ps as ProcScope));
-                        }
-                    }
-                    if (ps.acc_mod == access_modifer.protected_modifer || ps.acc_mod == access_modifer.private_modifer)
-                    {
-                        if (ps.acc_mod == access_modifer.private_modifer)
-                        {
-                            if (ev.IsInOneModule(ev.entry_scope, ps.topScope))
-                                if (!ps.si.not_include && !equal_params(ps, proc_defs))
-                                {
-                                    procs.Add(ps.si.description);
-                                    proc_defs.Add(ps);
-                                }
-                        }
-                        else
-                        if (ev.CheckForBaseAccess(ev.entry_scope, ps.topScope))
-                            if (!ps.si.not_include && !equal_params(ps, proc_defs))
-                            {
-                                procs.Add(ps.si.description);
-                                proc_defs.Add(ps);
-                            }
-                    }
-                    else
-                    if (!ps.si.not_include)
-                        if (!equal_params(ps, proc_defs))
-                        {
-                            procs.Add(ps.si.description);
-                            proc_defs.Add(ps);
-                        }
-                    i++;
-                    if (i < scopes.Count)
-                        ps = scopes[i];
-                    else
-                        ps = null;
+                    else if (!ps.si.has_doc)
+                        ps.AddDocumentation(UnitDocCache.GetDocumentation(ps));
+
+                    if (!ps.si.not_include && !equal_params(ps, proc_defs))
+                        proc_defs.Add(ps);
                 }
-                RestoreCurrentUsedAssemblies();
-                return procs.ToArray();
+
+                if (proc_defs.Count == 0)
+                    return null;
+
+                ProcScope[] overloads = proc_defs.OrderBy(GetSignatureParameterCount).ToArray();
+                if (defIndex < 0 || defIndex >= overloads.Length)
+                    defIndex = 0;
+                if (num_param > 1 && !AcceptsSignatureArgument(overloads[defIndex], num_param))
+                {
+                    int next = Array.FindIndex(overloads, overload => AcceptsSignatureArgument(overload, num_param));
+                    if (next >= 0)
+                        defIndex = next;
+                }
+                param_count = GetSignatureParameterCount(overloads[defIndex]);
+                return overloads.Select(overload => GetSignatureSummary(overload.si.description)).ToArray();
             }
-            RestoreCurrentUsedAssemblies();
-            return null;
+            finally
+            {
+                RestoreCurrentUsedAssemblies();
+            }
+        }
+
+        private static int GetSignatureParameterCount(ProcScope overload)
+        {
+            return Math.Max(0, overload.GetParametersCount() - (overload.IsExtension ? 1 : 0));
+        }
+
+        private static bool AcceptsSignatureArgument(ProcScope overload, int argumentNumber)
+        {
+            int parameterCount = GetSignatureParameterCount(overload);
+            return parameterCount >= argumentNumber ||
+                (parameterCount > 0 && overload.parameters != null &&
+                 overload.parameters.Count > 0 &&
+                 overload.parameters[overload.parameters.Count - 1].param_kind == parametr_kind.params_parametr);
+        }
+
+        private static string GetSignatureSummary(string description)
+        {
+            if (string.IsNullOrEmpty(description))
+                return description;
+
+            int parameters = description.IndexOf("<params>", StringComparison.Ordinal);
+            int returns = description.IndexOf("<returns>", StringComparison.Ordinal);
+            int end = parameters < 0 ? returns : returns < 0 ? parameters : Math.Min(parameters, returns);
+            return end < 0 ? description : description.Substring(0, end).TrimEnd();
         }
 
         private bool equal_params(ProcScope ps, List<ProcScope> procs)

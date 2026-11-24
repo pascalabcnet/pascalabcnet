@@ -656,7 +656,7 @@ namespace PascalABCCompiler.Parsers
 
         protected abstract string GetFullTypeName(Type ctn, bool no_alias = true);
 
-        protected string GetDescriptionForProcedure(IProcScope scope)
+        public string GetDescriptionForProcedure(IProcScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             string extensionType = null;
@@ -799,14 +799,15 @@ namespace PascalABCCompiler.Parsers
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.Append('(');
-            for (int i = 0; i < scope.EnumConsts.Length; i++)
+            var constants = scope.EnumConsts;
+            for (int i = 0; i < constants.Length; i++)
             {
-                sb.Append(scope.EnumConsts[i]);
-                if (i < scope.EnumConsts.Length - 1)
-                    sb.Append(',');
-                if (i >= 2)
+                if (i > 0)
+                    sb.Append(", ");
+                sb.Append(constants[i]);
+                if (i == 2 && constants.Length > 3)
                 {
-                    sb.Append("...");
+                    sb.Append(", …");
                     break;
                 }
             }
@@ -1568,7 +1569,7 @@ namespace PascalABCCompiler.Parsers
             {
                 sb.Append(GetSimpleDescriptionWithoutNamespace(generic_args[i]));
                 if (i < generic_args.Length - 1)
-                    sb.Append(",");
+                    sb.Append(", ");
             }
             sb.Append(")");
             return sb.ToString();
@@ -1583,7 +1584,7 @@ namespace PascalABCCompiler.Parsers
             {
                 sb.Append(GetShortTypeName(generic_args[i], false));
                 if (i < generic_args.Length - 1)
-                    sb.Append(",");
+                    sb.Append(", ");
             }
             sb.Append(")");
             return sb.ToString();
@@ -1611,6 +1612,9 @@ namespace PascalABCCompiler.Parsers
             ICompiledTypeScope cts = scope as ICompiledTypeScope;
             if (cts == null)
                 return GetSimpleDescription(scope);
+            if (cts.CompiledType.Namespace == "System" &&
+                cts.CompiledType.Name.StartsWith("Tuple`", StringComparison.Ordinal))
+                return GetSimpleDescriptionForCompiledType(cts, false);
             string s = GetShortName(cts);
             ITypeScope[] instances = scope.GenericInstances;
             if (instances != null && instances.Length > 0)
@@ -2034,7 +2038,8 @@ namespace PascalABCCompiler.Parsers
                 {
                     count++;
                 }
-                else if (c == ')' || c == ']' || c == '>' || c == '}')
+                else if (c == ')' || c == ']' || c == '}' ||
+                    (c == '>' && (i == 0 || descriptionAfterOpeningParenthesis[i - 1] != '-')))
                 {
                     count--;
                 }

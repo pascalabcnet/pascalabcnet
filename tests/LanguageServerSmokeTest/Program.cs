@@ -555,6 +555,45 @@ try
         .GetString()?.Contains("GroupBy", StringComparison.OrdinalIgnoreCase) == true,
         "hover describes GroupBy for an array of a Pascal class");
 
+    int groupByArgumentOffset = groupBySource.IndexOf("GroupBy(", StringComparison.Ordinal) + "GroupBy(".Length;
+    await WriteRequestAsync(input, 353, "textDocument/signatureHelp", groupByUri,
+        GetPosition(groupBySource, groupByArgumentOffset), timeout.Token);
+    using var groupBySignature = await ReadResponseAsync(output, 353, timeout.Token);
+    var firstGroupBySignature = groupBySignature.RootElement.GetProperty("result").GetProperty("signatures")[0];
+    var firstGroupByLabel = firstGroupBySignature.GetProperty("label").GetString();
+    Check(firstGroupByLabel?.Contains("keySelector", StringComparison.OrdinalIgnoreCase) == true &&
+          !firstGroupByLabel.Contains("elementSelector", StringComparison.OrdinalIgnoreCase) &&
+          !firstGroupByLabel.Contains("resultSelector", StringComparison.OrdinalIgnoreCase) &&
+          !firstGroupByLabel.Contains("comparer", StringComparison.OrdinalIgnoreCase),
+        "GroupBy signature help lists the overload with only a key selector first");
+    var groupByParameters = firstGroupBySignature.GetProperty("parameters");
+    Check(groupByParameters.GetArrayLength() == 1 &&
+          groupByParameters[0].GetProperty("label").GetString()?.StartsWith("keySelector:", StringComparison.OrdinalIgnoreCase) == true,
+        "GroupBy signature help exposes the key selector as its first parameter");
+
+    const string openGroupBySource = """
+    begin
+      var a := [12, 5, 8];
+      var b := a.Where(x -> x mod 2 = 0).GroupBy(
+      b.Println;
+    end.
+    """;
+    const string openGroupByUri = "untitled:OpenGroupByCall.pas";
+    await WriteDidOpenAsync(input, openGroupByUri, openGroupBySource, 1, timeout.Token);
+    int openGroupByOffset = openGroupBySource.IndexOf("GroupBy(", StringComparison.Ordinal);
+    await WriteRequestAsync(input, 354, "textDocument/signatureHelp", openGroupByUri,
+        GetPosition(openGroupBySource, openGroupByOffset + "GroupBy(".Length), timeout.Token);
+    using var openGroupBySignature = await ReadResponseAsync(output, 354, timeout.Token);
+    Check(openGroupBySignature.RootElement.GetProperty("result").GetProperty("signatures")[0]
+        .GetProperty("label").GetString()?.Contains("keySelector", StringComparison.OrdinalIgnoreCase) == true,
+        "signature help works after the opening parenthesis of an unfinished call chained after Where");
+    await WriteRequestAsync(input, 355, "textDocument/hover", openGroupByUri,
+        GetPosition(openGroupBySource, openGroupByOffset + 2), timeout.Token);
+    using var openGroupByHover = await ReadResponseAsync(output, 355, timeout.Token);
+    Check(openGroupByHover.RootElement.GetProperty("result").GetProperty("contents").GetProperty("value")
+        .GetString()?.Contains("GroupBy", StringComparison.OrdinalIgnoreCase) == true,
+        "hover works on the name of an unfinished call chained after Where");
+
     int lambdaCompletionId = 340;
     const string customLambdaDeclaration = "procedure CheckPupil(tag: integer; predicate: Pupil -> boolean); begin end;\n";
     foreach (var (method, declaration, call, suffix) in new[]
@@ -579,6 +618,86 @@ try
         using var completion = await ReadResponseAsync(output, lambdaCompletionId++, timeout.Token);
         Check(GetCompletionLabels(completion).Contains("Grade"),
             $"{method} completion infers the lambda parameter before the member is typed");
+    }
+
+    const string extensionElementSource = """
+    function StringsOnly(self: sequence of string): integer; extensionmethod := 1;
+    function AnyElements<T>(self: sequence of T): sequence of T; extensionmethod := self;
+    function WithValue<T, TResult>(self: sequence of T; value: TResult): sequence of T; extensionmethod := self;
+    begin
+      var numbers := Arr(12, 5, 8);
+      var filtered := numbers.Where(x -> x mod 2 = 0);
+      var words := Seq('one', 'two');
+      Print(filtered);
+      Print(words);
+      Print(numbers.Where(x -> x mod 2 = 0));
+    end.
+    """;
+    const string extensionElementUri = "untitled:ExtensionElementTypes.pas";
+    await WriteDidOpenAsync(input, extensionElementUri, extensionElementSource, 1, timeout.Token);
+    foreach (var (id, receiver, stringsAllowed) in new[]
+    {
+        (347, "filtered", false), (348, "words", true), (349, "numbers.Where(x -> x mod 2 = 0)", false)
+    })
+    {
+        int offset = extensionElementSource.IndexOf("Print(" + receiver, StringComparison.Ordinal)
+            + "Print(".Length + receiver.Length;
+        var text = extensionElementSource.Insert(offset, ".");
+        var uri = extensionElementUri + id;
+        await WriteDidOpenAsync(input, uri, text, 1, timeout.Token);
+        await WriteRequestAsync(input, id, "textDocument/completion", uri,
+            GetPosition(text, offset + 1), timeout.Token);
+        using var completion = await ReadResponseAsync(output, id, timeout.Token);
+        var labels = GetCompletionLabels(completion);
+        Check(labels.Contains("StringsOnly") == stringsAllowed,
+            $"concrete sequence extension requires matching elements for {receiver}");
+        Check(labels.Any(label => label.StartsWith("AnyElements", StringComparison.Ordinal)),
+            $"generic sequence extension remains available for {receiver}");
+        var genericExtension = completion.RootElement.GetProperty("result").GetProperty("items")
+            .EnumerateArray().FirstOrDefault(item => item.GetProperty("label").GetString()
+                ?.StartsWith("AnyElements", StringComparison.Ordinal) == true);
+        string elementType = stringsAllowed ? "string" : "integer";
+        Check(genericExtension.ValueKind != JsonValueKind.Undefined &&
+            genericExtension.TryGetProperty("detail", out var detail) &&
+            detail.GetString()?.Contains($"AnyElements(): sequence of {elementType}", StringComparison.Ordinal) == true,
+            $"completion displays the inferred result of AnyElements for {receiver}");
+        var partialExtension = completion.RootElement.GetProperty("result").GetProperty("items")
+            .EnumerateArray().FirstOrDefault(item => item.GetProperty("label").GetString()
+                ?.StartsWith("WithValue", StringComparison.Ordinal) == true);
+        Check(partialExtension.ValueKind != JsonValueKind.Undefined &&
+            partialExtension.TryGetProperty("detail", out var partialDetail) &&
+            partialDetail.GetString()?.Contains(
+                $"WithValue<TResult>(value: TResult): sequence of {elementType}", StringComparison.Ordinal) == true,
+            $"completion leaves the type depending on the argument open for {receiver}");
+        Check(labels.Contains("Order") == stringsAllowed,
+            $"string Order overload requires string elements for {receiver}");
+        if (!stringsAllowed)
+        {
+            var order = completion.RootElement.GetProperty("result").GetProperty("items")
+                .EnumerateArray().FirstOrDefault(item => item.GetProperty("label").GetString() == "Order<>");
+            Check(order.ValueKind != JsonValueKind.Undefined && order.TryGetProperty("detail", out var orderDetail) &&
+                (orderDetail.GetString()?.Contains("Order(): sequence of integer", StringComparison.Ordinal) == true ||
+                 orderDetail.GetString()?.Contains("Order(): IOrderedEnumerable<integer>", StringComparison.Ordinal) == true),
+                $"completion displays the integer result of Order for {receiver}");
+        }
+    }
+
+    const string firstDotPrefix = "begin\n  var a := [12, 5, 8];\n";
+    foreach (var (id, statement) in new[]
+    {
+        (350, "var b := "), (351, "Print("), (352, "Print(a[")
+    })
+    {
+        var prefix = firstDotPrefix + "  " + statement + "a.Where(x -> x mod 2 = 0).";
+        // The dot and the missing initializer in the suffix prevent full-file analysis.
+        var source = prefix + "\n  b.Println;\n  var broken := ;\nend.";
+        var uri = $"untitled:FirstDot{id}.pas";
+        await WriteDidOpenAsync(input, uri, source, 1, timeout.Token);
+        await WriteRequestAsync(input, id, "textDocument/completion", uri,
+            GetPosition(source, prefix.Length), timeout.Token);
+        using var firstDot = await ReadResponseAsync(output, id, timeout.Token);
+        Check(GetCompletionLabels(firstDot).Contains("Order<>"),
+            $"first dot after Where shows sequence methods for {statement}");
     }
 
     const string arraySignatureSource = """

@@ -230,10 +230,28 @@ namespace ICSharpCode.TextEditor.Document
 				if (ruleSet.Reference != null) {
 					return ruleSet.Highlighter.GetColor(document, currentSegment, currentOffset, currentLength);
 				} else {
-					return (HighlightColor)ruleSet.KeyWords[document,  currentSegment, currentOffset, currentLength];
+					var color = (HighlightColor)ruleSet.KeyWords[document, currentSegment, currentOffset, currentLength];
+					string memberKeyword;
+					if (color != null && Properties.TryGetValue("KeywordAsMember", out memberKeyword) &&
+					    currentLength == memberKeyword.Length &&
+					    IsAfterMemberDot(document, currentSegment.Offset, currentOffset) &&
+					    string.Equals(document.GetText(currentSegment.Offset + currentOffset, currentLength), memberKeyword,
+					                  ruleSet.IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+						return null;
+					return color;
 				}
 			}
 			return null;
+		}
+
+		static bool IsAfterMemberDot(IDocument document, int lineOffset, int wordOffset)
+		{
+			int previous = wordOffset - 1;
+			while (previous >= 0 && char.IsWhiteSpace(document.GetCharAt(lineOffset + previous)))
+				previous--;
+
+			return previous >= 0 && document.GetCharAt(lineOffset + previous) == '.' &&
+			       (previous == 0 || document.GetCharAt(lineOffset + previous - 1) != '.');
 		}
 		
 		public HighlightRuleSet GetRuleSet(Span aSpan)

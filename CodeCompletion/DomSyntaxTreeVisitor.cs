@@ -2765,7 +2765,8 @@ namespace CodeCompletion
             // Добавляем стандартные имена языка  EVA
             AddStandardNamesFictiveUnitAsUsedUnit(cur_scope);
 
-            CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
+            if (converter.PublishModule)
+                CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
 
             if (!existed_ns)
             {
@@ -3304,7 +3305,8 @@ namespace CodeCompletion
             AddFrameworkCoreReferences(unit_scope);
             AddFrameworkPlatformReferences(unit_scope, namespaces, _program_module.compiler_directives);
 #endif
-            CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
+            if (converter.PublishModule)
+                CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
             if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
             {
@@ -6008,10 +6010,14 @@ namespace CodeCompletion
             ps.si.not_include = true;
             if (!disable_lambda_compilation)
                 cur_scope.AddName(_function_lambda_definition.lambda_name, ps);
-            if (_function_lambda_definition.ident_list != null)
-                for (int i=0; i<_function_lambda_definition.ident_list.idents.Count; i++)
+            var unpackedParameters = _function_lambda_definition.unpacked_params;
+            int parameterCount = unpackedParameters != null ? unpackedParameters.Count
+                : _function_lambda_definition.ident_list?.idents.Count ?? 0;
+            for (int i = 0; i < parameterCount; i++)
                 {
-                    ident id = _function_lambda_definition.ident_list.idents[i];
+                    var parameterSyntax = unpackedParameters != null ? unpackedParameters[i]
+                        : _function_lambda_definition.ident_list.idents[i];
+                    ident id = parameterSyntax as ident ?? new ident("$unpacked" + i, parameterSyntax.source_context);
                     TypeScope param_type = new UnknownScope(new SymInfo("T", SymbolKind.Type, "T"));
                     if (awaitedProcType != null)
                     {
@@ -6019,7 +6025,7 @@ namespace CodeCompletion
                             awaitedProcType = (awaitedProcType as TypeSynonim).GetLeafActType();
                         if (awaitedProcType is ProcType)
                         {
-                            if ((awaitedProcType as ProcType).target.parameters.Count > 0)
+                            if ((awaitedProcType as ProcType).target.parameters.Count > i)
                                 param_type = (awaitedProcType as ProcType).target.parameters[i].sc as TypeScope;
                         }
                         else if (awaitedProcType.IsDelegate && awaitedProcType.instances != null && awaitedProcType.instances.Count > 0)
@@ -6050,6 +6056,11 @@ namespace CodeCompletion
                     ps.AddName(id.name, es);
                     ps.AddParameter(es);
                     es.loc = get_location(id);
+                    if (parameterSyntax is unpacked_list_of_ident_or_list unpacked)
+                    {
+                        es.si.not_include = true;
+                        AddUnpackedLambdaNames(unpacked, param_type, ps);
+                    }
                 }
             SymScope tmp = cur_scope;
             cur_scope = ps;
@@ -6083,6 +6094,26 @@ namespace CodeCompletion
             else if (saved_return_type == ps.return_type)
                 ps.return_type = new UnknownScope(new SymInfo("",SymbolKind.Class,""));// returned_scope as TypeScope;
             returned_scope = new ProcType(ps);
+        }
+
+        private void AddUnpackedLambdaNames(unpacked_list_of_ident_or_list unpacked, TypeScope type, ProcScope scope)
+        {
+            if (type is TypeSynonim synonym)
+                type = synonym.GetLeafActType();
+            for (int i = 0; i < unpacked.lst.Count; i++)
+            {
+                var part = unpacked.lst[i];
+                TypeScope partType = type?.instances != null && i < type.instances.Count
+                    ? type.instances[i] : new UnknownScope(new SymInfo("T", SymbolKind.Type, "T"));
+                if (part.lst != null)
+                    AddUnpackedLambdaNames(part.lst, partType, scope);
+                else if (part.id != null)
+                {
+                    var element = new ElementScope(new SymInfo(part.id.name, SymbolKind.Parameter, ""), partType, scope);
+                    element.loc = get_location(part.id);
+                    scope.AddName(part.id.name, element);
+                }
+            }
         }
 
         public override void visit(function_lambda_call _function_lambda_call)

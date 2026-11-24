@@ -239,6 +239,15 @@ namespace QUT.Gppg
                         // nullable production will be correct.
                         LastSpan = scanner.yylloc;
                         NextToken = scanner.yylex();
+                        if (NextToken == endOfFileToken && CompletionClosingTokens != null)
+                        {
+                            CompletionSuffix = FindCompletionSuffix();
+                            if (CompletionSuffix != null && CompletionSuffix.Length != 0)
+                                return false;
+                            if (CompletionSuffix == null)
+                                return false;
+                            CompletionSuffix = null;
+                        }
                     }
 
 #if TRACE_ACTIONS
@@ -275,9 +284,77 @@ namespace QUT.Gppg
                     }
                 }
                 else if (action == 0)   // error
+                {
                     if (!ErrorRecovery())
                         return false;
+                }
             }
+        }
+
+        public int[] CompletionClosingTokens { get; set; }
+        public int CompletionFinalToken { get; set; }
+        public int[] CompletionSuffix { get; private set; }
+
+        // Search only the grammar state stack. Semantic actions run on the final
+        // parse of the prefix with its suffix, never on speculative branches.
+        private int[] FindCompletionSuffix()
+        {
+            var initial = new List<State>();
+            for (int i = 0; i < StateStack.Depth; i++)
+                initial.Add(StateStack[i]);
+            var queue = new Queue<KeyValuePair<List<State>, List<int>>>();
+            queue.Enqueue(new KeyValuePair<List<State>, List<int>>(initial, new List<int>()));
+            var visited = new HashSet<string>();
+            while (queue.Count > 0 && visited.Count < 128)
+            {
+                var candidate = queue.Dequeue();
+                if (!visited.Add(string.Join(",", candidate.Key.ConvertAll(state => state.number))))
+                    continue;
+                if ((candidate.Value.Count == 0 || candidate.Value[candidate.Value.Count - 1] == CompletionFinalToken) &&
+                    SimulateCompletionToken(new List<State>(candidate.Key), endOfFileToken) == -1)
+                    return candidate.Value.ToArray();
+                if (candidate.Value.Count == 16)
+                    continue;
+                foreach (int token in CompletionClosingTokens)
+                {
+                    var next = new List<State>(candidate.Key);
+                    if (SimulateCompletionToken(next, token) != 1)
+                        continue;
+                    var suffix = new List<int>(candidate.Value) { token };
+                    queue.Enqueue(new KeyValuePair<List<State>, List<int>>(next, suffix));
+                }
+            }
+            return null;
+        }
+
+        // Returns one for a shift, minus one for acceptance, zero for an error.
+        private int SimulateCompletionToken(List<State> stack, int token)
+        {
+            for (int step = 0; step < 256; step++)
+            {
+                var state = stack[stack.Count - 1];
+                int action = state.defaultAction;
+                if (state.ParserTable != null && state.ParserTable.TryGetValue(token, out int explicitAction))
+                    action = explicitAction;
+                if (action > 0)
+                {
+                    stack.Add(states[action]);
+                    if (token != endOfFileToken)
+                        return 1;
+                    continue;
+                }
+                if (action >= -1)
+                    return action;
+                var rule = rules[-action];
+                if (rule.RightHandSide.Length >= stack.Count)
+                    return 0;
+                stack.RemoveRange(stack.Count - rule.RightHandSide.Length, rule.RightHandSide.Length);
+                var beforeRule = stack[stack.Count - 1];
+                if (beforeRule.Goto == null || !beforeRule.Goto.TryGetValue(rule.LeftHandSide, out int next))
+                    return 0;
+                stack.Add(states[next]);
+            }
+            return 0;
         }
 
         private void Shift(int stateIndex)

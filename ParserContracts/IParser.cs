@@ -6,7 +6,7 @@ using PascalABCCompiler.Errors;
 
 namespace PascalABCCompiler.Contracts.Parsers
 {
-    public enum ParseMode { Normal, Expression, Statement, Special, ForFormatter, TypeAsExpression };
+    public enum ParseMode { Normal, Expression, Statement, Special, ForFormatter, TypeAsExpression, CompletionPrefix };
     public interface IParser
     {
         compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings, ParseMode parseMode, bool compilingNotMainProgram, List<string> DefinesList = null);

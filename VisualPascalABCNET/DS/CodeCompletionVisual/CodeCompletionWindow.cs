@@ -157,10 +157,9 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			
 			if (declarationViewWindow == null) {
 				declarationViewWindow = new DeclarationWindow(parentForm);
-				declarationViewWindow.in_completion_list = true;
+				declarationViewWindow.CompletionWindow = this;
                 declarationViewWindow.Font = new Font(VisualPascalABC.Constants.CompletionWindowDeclarationViewWindowFontName, declarationViewWindow.Font.Size);
 			}            
-			SetDeclarationViewLocation();
             //DS закоментил, это желтый квадрат при старте
 			//declarationViewWindow.ShowDeclarationViewWindow();
 			declarationViewWindow.MouseMove += ControlMouseMove;
@@ -204,28 +203,17 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			inScrollUpdate = false;
 		}
 		
-		void SetDeclarationViewLocation()
-		{
-			//  This method uses the side with more free space
-			int leftSpace = Bounds.Left - workingScreen.Left;
-			int rightSpace = workingScreen.Right - Bounds.Right;
-			Point pos;
-			// The declaration view window has better line break when used on
-			// the right side, so prefer the right side to the left.
-			if (rightSpace * 2 > leftSpace)
-				pos = new Point(Bounds.Right+2, Bounds.Top);
-			else
-				pos = new Point(Bounds.Left - declarationViewWindow.Width+2, Bounds.Top);
-			if (declarationViewWindow.Location != pos) {
-				declarationViewWindow.Location = pos;
-			}
-		}
-		
 		protected override void SetLocation()
 		{
 			base.SetLocation();
+			Rectangle screen = Screen.GetWorkingArea(Bounds);
+			int descriptionWidth = Math.Min(Width, screen.Width / 3);
+			int maxLeft = Math.Max(screen.Left, screen.Right - Width - DeclarationWindow.CompletionGap - descriptionWidth);
+			if (Left > maxLeft)
+				Left = maxLeft;
+
 			if (declarationViewWindow != null) {
-				SetDeclarationViewLocation();
+				declarationViewWindow.Invalidate();
 			}
 		}
 		
@@ -250,7 +238,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (data != null && !(data is UserDefaultCompletionData legacy && legacy.IsOnOverrideWindow) && data.Description != null && data.Description.Length > 0) {
 				
 				declarationViewWindow.Description = data.Description;
-				SetDeclarationViewLocation();
 			} else {
 				declarationViewWindow.Description = null;
 			}

@@ -489,7 +489,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Возвращает массив подсказок для случая нажатия пользователем "триггерной" клавиши
         /// </summary>
-        public ICompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, KeywordKind keywordKind)
+        public ICompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, KeywordKind keywordKind, string documentText = null)
         {
             List<ICompletionData> resultList = new List<ICompletionData>();
             try
@@ -506,8 +506,11 @@ namespace VisualPascalABC
                     spaceAfterUses = keywordKind == KeywordKind.Uses
                 };
 
+                bool insidePatternWithDots;
+                bool ctrlOrShiftSpaceAfterDot;
+                string pattern;
                 string expressionText = GetExpressionTextForCompletionData(off, text, line, col,
-                    currentLanguage.LanguageIntellisenseSupport, in context, out var insidePatternWithDots, out var ctrlOrShiftSpaceAfterDot, out var pattern);
+                    currentLanguage.LanguageIntellisenseSupport, context, out insidePatternWithDots, out ctrlOrShiftSpaceAfterDot, out pattern);
 
                 // добавляем ключевые слова в случае "ctrl + space", нажатых в "пустом" месте
                 if (!ctrlOrShiftSpaceAfterDot && context.ctrlSpace && string.IsNullOrEmpty(pattern))
@@ -523,15 +526,20 @@ namespace VisualPascalABC
                 // для "ctrl + space" и "shift + space" дерево expression не требуется (кроме случая insidePatternWithDots)
                 if ((context.dotPressed || context.spaceAfterNew || context.spaceAfterUses || insidePatternWithDots) && expressionText != null)
                 {
+                    bool shouldReturnNull;
                     expr = GetExpressionForCompletionData(currentLanguage.Parser,
-                        in context, expressionText, insidePatternWithDots, out var shouldReturnNull);
+                        context, expressionText, insidePatternWithDots, out shouldReturnNull);
 
                     if (shouldReturnNull)
                         return null;
                 }
 
-                SymInfo[] symInfos = GetSymInfosForCompletionData(line, col, in context, currentLanguage.CaseSensitive,
-                    expressionText, ctrlOrShiftSpaceAfterDot, insidePatternWithDots, pattern, expr, out var selectedSymInfo, out var lastUsedMember, out var shouldReturnNull2);
+                SymInfo selectedSymInfo;
+                string lastUsedMember;
+                bool shouldReturnNull2;
+                SymInfo[] symInfos = GetSymInfosForCompletionData(line, col, context, currentLanguage.CaseSensitive,
+                    expressionText, ctrlOrShiftSpaceAfterDot, insidePatternWithDots, pattern, expr, documentText, off,
+                    out selectedSymInfo, out lastUsedMember, out shouldReturnNull2);
 
                 if (shouldReturnNull2)
                     return null;
@@ -596,7 +604,7 @@ namespace VisualPascalABC
         /// Формирует массив данных из таблицы символов для подсказок в случае нажатия пользователем "триггерной" клавиши 
         /// (в зависимости от введенного выражения и другого контекста)
         /// </summary>
-        private SymInfo[] GetSymInfosForCompletionData(int line, int col, in ActionContext context, bool languageCaseSensitive, string expressionText, bool ctrlOrShiftSpaceAfterDot, bool insidePatternWithDots, string pattern, PascalABCCompiler.SyntaxTree.expression expr, out SymInfo selectedSymInfo, out string lastUsedMember, out bool shouldReturnNull)
+        private SymInfo[] GetSymInfosForCompletionData(int line, int col, ActionContext context, bool languageCaseSensitive, string expressionText, bool ctrlOrShiftSpaceAfterDot, bool insidePatternWithDots, string pattern, PascalABCCompiler.SyntaxTree.expression expr, string documentText, int receiverEnd, out SymInfo selectedSymInfo, out string lastUsedMember, out bool shouldReturnNull)
         {
             SymInfo[] symInfos = null;
 
@@ -606,6 +614,26 @@ namespace VisualPascalABC
             lastUsedMember = null;
 
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[FileName];
+
+            if (context.dotPressed || ctrlOrShiftSpaceAfterDot)
+            {
+                CodeCompletion.SymScope dotScope = null;
+                if (dconv != null)
+                    symInfos = dconv.GetName(expr, expressionText, line, col, keyword, ref dotScope);
+                if (context.dotPressed && expr != null && documentText != null &&
+                    (symInfos == null || symInfos.Length == 0))
+                {
+                    var recovered = controller.CompileForDotCompletion(FileName, documentText, receiverEnd, tryWholeFile: true);
+                    if (recovered != null && recovered.is_compiled)
+                        symInfos = recovered.GetName(expr, expressionText, line, col, keyword, ref dotScope);
+                }
+                if (dotScope != null && VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
+                {
+                    CompletionDataDispatcher.AddMemberBeforeDot(dotScope);
+                    lastUsedMember = CompletionDataDispatcher.GetRecentUsedMember(dotScope);
+                }
+                return symInfos;
+            }
 
             if (dconv == null)
             {
@@ -628,18 +656,6 @@ namespace VisualPascalABC
                         symInfos = dconv.GetNamespaces();
                     else
                         symInfos = CodeCompletion.DomConverter.standard_units;
-                }
-                // нажатие ctrl + space и shift + space сразу после точки приравнивается к нажатию точки
-                else if (context.dotPressed || ctrlOrShiftSpaceAfterDot)
-                {
-                    CodeCompletion.SymScope dotScope = null;
-                    symInfos = dconv.GetName(expr, expressionText, line, col, keyword, ref dotScope);
-
-                    if (dotScope != null && VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
-                    {
-                        CompletionDataDispatcher.AddMemberBeforeDot(dotScope);
-                        lastUsedMember = CompletionDataDispatcher.GetRecentUsedMember(dotScope);
-                    }
                 }
                 // ctrl + space или shift + space
                 else if (context.ctrlSpace || context.shiftSpace)
@@ -667,7 +683,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Возвращает дерево выражения, введенного пользователем перед нажатием "триггерной" клавиши
         /// </summary>
-        private PascalABCCompiler.SyntaxTree.expression GetExpressionForCompletionData(IParser parser, in ActionContext context, string expressionText, bool insidePatternWithDots, out bool shouldReturnNull)
+        private PascalABCCompiler.SyntaxTree.expression GetExpressionForCompletionData(IParser parser, ActionContext context, string expressionText, bool insidePatternWithDots, out bool shouldReturnNull)
         {
             shouldReturnNull = false;
 
@@ -690,7 +706,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Получение текста выражения, введенного пользователем перед нажатием "триггерной" клавиши
         /// </summary>
-        private string GetExpressionTextForCompletionData(int off, string text, int line, int col, ILanguageIntellisenseSupport languageInformation, in ActionContext context, out bool insidePatternWithDots, out bool ctrlOrShiftSpaceAfterDot, out string pattern)
+        private string GetExpressionTextForCompletionData(int off, string text, int line, int col, ILanguageIntellisenseSupport languageInformation, ActionContext context, out bool insidePatternWithDots, out bool ctrlOrShiftSpaceAfterDot, out string pattern)
         {
 
             string expressionText = null;
@@ -701,7 +717,8 @@ namespace VisualPascalABC
             if (context.ctrlSpace || context.shiftSpace)
             {
 
-                pattern = languageInformation.FindPattern(off, text, out var isPattern);
+                bool isPattern;
+                pattern = languageInformation.FindPattern(off, text, out isPattern);
 
                 // в конце выражения точка
                 if (!isPattern && text[off - 1] == '.')
@@ -745,10 +762,11 @@ namespace VisualPascalABC
             CancelDocumentation();
             controller = new CodeCompletion.CodeCompletionController();
             int off = textArea.Caret.Offset;
-            string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
+            string documentText = textArea.Document.TextContent;
+            string text = documentText.Substring(0, off);
             //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
-            ICompletionData[] data = GetCompletionData(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
+            ICompletionData[] data = GetCompletionData(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw, documentText);
             StartDocumentation(textArea, data != null && data.Length != 0);
             controller = null;
             //GC.Collect();

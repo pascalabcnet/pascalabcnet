@@ -169,7 +169,19 @@ namespace PascalABCCompiler
         }
         public override void visit(enum_type_definition _enum_type_definition)
         {
-            visit_collection(_enum_type_definition.enumerators.enumerators);
+            // Members on the opening line share the type's line, so skip it.
+            int previousLine = _enum_type_definition.source_context?.begin_position?.line_num ?? 0;
+            var items = _enum_type_definition.enumerators;
+            if (items == null)
+                return;
+            foreach (var item in items.enumerators)
+            {
+                int line = item.source_context?.begin_position?.line_num ?? 0;
+                if (line <= previousLine)
+                    continue;
+                visit_node(item);
+                previousLine = line;
+            }
         }
         public override void visit(enumerator _enumerator)
         {

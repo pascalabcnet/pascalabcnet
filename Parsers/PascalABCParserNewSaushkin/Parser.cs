@@ -76,7 +76,7 @@ namespace Languages.Pascal.Frontend.Wrapping
 
 
         private syntax_tree_node Parse(string Text, string fileName, bool buildTreeForFormatter = false, List<string> definesList = null,
-            bool checkPackagePosition = false)
+            bool checkPackagePosition = false, Action<int[]> completionSuffix = null)
         {
 #if DEBUG
 #if _ERR
@@ -99,9 +99,17 @@ namespace Languages.Pascal.Frontend.Wrapping
                 parsingScanner = new PackageDirectivePositionScanner(scanner, parserTools);
 #endif
             GPPGParser parser = new GPPGParser(parsingScanner, parserTools);
+            if (completionSuffix != null)
+            {
+                parser.CompletionClosingTokens = new[] { (int)Tokens.tkRoundClose, (int)Tokens.tkSquareClose,
+                    (int)Tokens.tkEnd, (int)Tokens.tkPoint, (int)Tokens.tkSemiColon };
+                parser.CompletionFinalToken = (int)Tokens.tkPoint;
+            }
 
             if (!parser.Parse())
-                if (Errors.Count == 0)
+                if (parser.CompletionSuffix != null)
+                    completionSuffix(parser.CompletionSuffix);
+                else if (Errors.Count == 0)
                     parserTools.AddError("Неопознанная синтаксическая ошибка!", null);
 #if DEBUG
 #if _ERR
@@ -161,6 +169,29 @@ namespace Languages.Pascal.Frontend.Wrapping
         {
             syntax_tree_node root = Parse(Text, FileName);
             return root;
+        }
+
+        protected override syntax_tree_node BuildTreeFromCompletionPrefix(string fileName, string text, List<string> defines)
+        {
+            int[] suffix = null;
+            var root = Parse(text, fileName, definesList: defines, checkPackagePosition: true,
+                completionSuffix: tokens => suffix = tokens);
+            if (Errors.Count != 0 || suffix == null)
+                return Errors.Count == 0 ? root : null;
+
+            var completed = new System.Text.StringBuilder(text).AppendLine();
+            foreach (var token in suffix)
+                switch ((Tokens)token)
+                {
+                    case Tokens.tkRoundClose: completed.Append(") "); break;
+                    case Tokens.tkSquareClose: completed.Append("] "); break;
+                    case Tokens.tkEnd: completed.Append("end "); break;
+                    case Tokens.tkPoint: completed.Append(". "); break;
+                    case Tokens.tkSemiColon: completed.Append("; "); break;
+                }
+            CompilerDirectives.Clear();
+            Warnings.Clear();
+            return BuildTreeInNormalMode(fileName, completed.ToString(), false, defines);
         }
 
         protected override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)

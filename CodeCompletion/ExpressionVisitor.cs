@@ -79,11 +79,54 @@ namespace CodeCompletion
             return returned_scope;
         }
 
+        private bool completingAfterDot;
+
+        // Pascal permits omitting () only when no explicit arguments are needed.
+        // Keep this restriction local to dot completion, not hover/signature lookup.
+        private SymScope RestrictImplicitCallResult(SymScope scope, expression syntax)
+        {
+            while (syntax is bracket_expr)
+                syntax = (syntax as bracket_expr).expr;
+            if (syntax is method_call)
+                return scope;
+            var procedure = scope as ProcScope ?? (scope as ElementScope)?.sc as ProcScope;
+            if (procedure == null)
+                return scope;
+            // Inside a function its own name can denote the result variable.
+            if (syntax is ident)
+                for (var current = entry_scope; current != null; current = current.topScope)
+                    if (current == procedure || (current as ProcRealization)?.def_proc == procedure)
+                        return scope;
+            var visited = new HashSet<ProcScope>();
+            for (var candidate = procedure; candidate != null && visited.Add(candidate); candidate = candidate.nextProc)
+            {
+                int receiver = candidate.is_extension && syntax is dot_node ? 1 : 0;
+                ParameterInfo[] reflected = candidate is CompiledMethodScope
+                    ? (candidate as CompiledMethodScope).mi.GetParameters()
+                    : candidate is CompiledConstructorScope ? (candidate as CompiledConstructorScope).mi.GetParameters() : null;
+                bool callable = true;
+                if (candidate.parameters != null)
+                    for (int i = receiver; i < candidate.parameters.Count; i++)
+                        if (candidate.parameters[i].cnst_val == null &&
+                            candidate.parameters[i].param_kind != parametr_kind.params_parametr &&
+                            !(reflected != null && i < reflected.Length && reflected[i].IsOptional))
+                        {
+                            callable = false;
+                            break;
+                        }
+                if (!callable) continue;
+                return candidate == procedure ? scope
+                    : scope is ElementScope ? new ElementScope(candidate) : (SymScope)candidate;
+            }
+            return null;
+        }
+
         public SymScope GetScopeOfExpression(bool by_dot, bool on_bracket)
         {
             if (expr is const_node && !(expr is string_const) && !(expr is char_const) && !(expr is bool_const))
                 return null;
             this.on_bracket = on_bracket;
+            completingAfterDot = by_dot;
             try
             {
                 expr.visit(this);
@@ -92,6 +135,8 @@ namespace CodeCompletion
             {
                 returned_scope = null;
             }
+            if (by_dot)
+                returned_scope = RestrictImplicitCallResult(returned_scope, expr);
             if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcType && expr is method_call)
             {
                 if (by_dot)
@@ -845,6 +890,8 @@ namespace CodeCompletion
             search_all = tmp2;
             by_dot = tmp;
 
+            if (completingAfterDot)
+                returned_scope = RestrictImplicitCallResult(returned_scope, _dot_node.left);
             if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope)
             {
                 if (((returned_scope as ElementScope).sc as ProcScope).return_type != null)
@@ -898,6 +945,16 @@ namespace CodeCompletion
                             return;
                         }
                         ProcScope ps = returned_scope as ProcScope;
+                        if (completingAfterDot && ps != null)
+                        {
+                            var candidate = RestrictImplicitCallResult(ps, _dot_node) as ProcScope;
+                            if (candidate == null)
+                                candidate = tmp_tn.FindOverloadNamesOnlyInType((_dot_node.right as ident).name)
+                                    .OfType<ProcScope>().Select(p => RestrictImplicitCallResult(p, _dot_node) as ProcScope)
+                                    .FirstOrDefault(p => p != null);
+                            returned_scope = ps = candidate;
+                            if (ps == null) return;
+                        }
                         if (ps != null && !(ps.IsStatic && tmp_tn is ElementScope))
                         {
                             if (ps.return_type == null || ps.parameters != null && ps.parameters.Count > 0)

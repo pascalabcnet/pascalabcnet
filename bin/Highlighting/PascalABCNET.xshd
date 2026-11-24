@@ -5,6 +5,7 @@
 	
 	<Properties>
 		<Property name="LineComment" value="//"/>
+		<Property name="KeywordAsMember" value="where"/>
 	</Properties>
 	
 	<Digits name = "Digits" bold = "false" italic = "false" color = "DarkGreen"/>

@@ -120,7 +120,42 @@ namespace CodeCompletion
             @"(?=\s*(?<suffix>[),;]|end[ \t]*[.;]|\z))",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         
+        private static readonly object compilationLock = new object();
+
         public DomConverter Compile(string FileName, string Text)
+        {
+            lock (compilationLock)
+                return CompileCore(FileName, Text, ParseMode.Normal, true);
+        }
+
+        public DomConverter CompileForDotCompletion(string fileName, string text, int receiverEnd, bool tryWholeFile)
+        {
+            if (receiverEnd <= 0 || receiverEnd > text.Length)
+                return null;
+            lock (compilationLock)
+            {
+                if (tryWholeFile)
+                {
+                    var full = CompileCore(fileName, text, ParseMode.Normal, false);
+                    if (full.is_compiled)
+                        return full;
+                }
+                return CompileCore(fileName, text.Substring(0, receiverEnd), ParseMode.CompletionPrefix, false);
+            }
+        }
+
+        internal static DomConverter CompileCallPrefix(DomConverter previous, string fileName, string text, int calleeEnd)
+        {
+            var controller = previous == null ? new CodeCompletionController() : previous.controller;
+#if PABCNET_MODERN
+            if (controller.PackageRestoreRequired)
+                return null;
+#endif
+            var recovered = controller.CompileForDotCompletion(fileName, text, calleeEnd, false);
+            return recovered != null && recovered.is_compiled ? recovered : null;
+        }
+
+        private DomConverter CompileCore(string FileName, string Text, ParseMode mode, bool publishModule)
         {
 #if PABCNET_MODERN
             RefreshReferenceAssemblies();
@@ -134,9 +169,9 @@ namespace CodeCompletion
 
             try
             {
-                cu = currentLanguage.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, ParseMode.Normal, false);
+                cu = currentLanguage.Parser.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, mode, false);
 
-                if (cu == null && currentLanguage == LanguageProvider.MainLanguage)
+                if (cu == null && mode == ParseMode.Normal && currentLanguage == LanguageProvider.MainLanguage)
                 {
                     // Keep the member access inside the lambda so normal overload resolution
                     // can infer the parameter type even before the member name is typed.
@@ -176,7 +211,7 @@ namespace CodeCompletion
             // очистка кэша и данных от старых компиляций, чтобы при новой компиляции не появились ссылки на старые данные
             TypeTable.Clear();
 
-            DomConverter dconv = new DomConverter(this);
+            DomConverter dconv = new DomConverter(this) { PublishModule = publishModule };
 #if PABCNET_MODERN
             dconv.AnalysisSourceText = Text;
             preparedReferencePaths = null;
@@ -193,7 +228,7 @@ namespace CodeCompletion
                 dconv.ConvertToDom(cu);
             }
             // Попытка поменять текст программы ниже сработает только для PascalABC.NET
-            else if (currentLanguage == LanguageProvider.MainLanguage)
+            else if (mode == ParseMode.Normal && currentLanguage == LanguageProvider.MainLanguage)
             {
 
                 ErrorsList.Clear();

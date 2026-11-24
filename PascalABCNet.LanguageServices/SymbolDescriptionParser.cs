@@ -21,7 +21,7 @@ internal static class SymbolDescriptionParser
 
     private static IReadOnlyList<string> ParseParameters(string label)
     {
-        var open = label.IndexOf('(');
+        var open = CodeCompletion.SignatureHelpService.FindParameterListStart(label);
         if (open < 0)
             return Array.Empty<string>();
 
@@ -54,7 +54,7 @@ internal static class SymbolDescriptionParser
                 case '<':
                     angleDepth++;
                     break;
-                case '>':
+                case '>' when label[index - 1] != '-':
                     angleDepth--;
                     break;
                 case ',' or ';' when roundDepth == 0 && squareDepth == 0 && angleDepth == 0:

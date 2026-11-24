@@ -344,7 +344,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             List<ProcScope> meth_list = GetExtensionMethods(ts);
             for (int i = 0; i < meth_list.Count; i++)
-                lst.Add(meth_list[i].WithRefreshedDescription().si);
+                lst.Add(meth_list[i].GetExtensionCompletionInfo(ts));
             return lst.ToArray();
         }
 
@@ -372,7 +372,8 @@ namespace CodeCompletion
             if (ts is TypeSynonim)
                 return GetExtensionMethods((ts as TypeSynonim).actType, name);
             if (ts.original_type != null)
-                return GetExtensionMethods(ts.original_type, name);
+                return GetExtensionMethods(ts.original_type, name)
+                    .Where(method => HasCompatibleExtensionArguments(ts, method)).ToList();
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
@@ -475,7 +476,86 @@ namespace CodeCompletion
                     }
                        
                 }
-            return lst;
+            return lst.Where(method => HasCompatibleExtensionArguments(ts, method)).ToList();
+        }
+
+        private static bool HasCompatibleExtensionArguments(TypeScope receiver, ProcScope method)
+        {
+            // Candidate discovery also visits open definitions. Filter only
+            // after returning to the receiver that supplies the actual arguments.
+            if (receiver is CompiledScope open && open.CompiledType.IsGenericTypeDefinition &&
+                open.GetInstances().Count == 0)
+                return true;
+            var expected = method.parameters?.FirstOrDefault()?.sc as TypeScope;
+            if (expected is TypeSynonim synonym)
+                expected = synonym.GetLeafActType();
+            if (expected == null || expected is TemplateParameterScope || expected.IsGenericParameter)
+                return true;
+            if (expected is ArrayScope array && receiver.IsArray)
+                return MatchesExtensionArgument(receiver.GetElementType(), array.elementType, false);
+            var expectedArguments = expected.GetInstances();
+            if (expectedArguments == null || expectedArguments.Count == 0)
+                return true;
+
+            var candidates = new List<TypeScope>();
+            for (var current = receiver; current != null; current = current.baseScope)
+                candidates.Add(current);
+            var interfaces = receiver.GetAllImplementedInterfaces();
+            if (interfaces != null)
+                candidates.AddRange(interfaces);
+            return candidates.Any(candidate =>
+                HaveSameGenericTypeDefinition(candidate, expected) &&
+                MatchesExtensionArgument(candidate, expected, false));
+        }
+
+        private static bool MatchesExtensionArgument(TypeScope actual, TypeScope expected, bool covariant)
+        {
+            if (actual is TypeSynonim actualSynonym)
+                actual = actualSynonym.GetLeafActType();
+            if (expected is TypeSynonim expectedSynonym)
+                expected = expectedSynonym.GetLeafActType();
+            if (expected is TemplateParameterScope || expected != null && expected.IsGenericParameter)
+                return true;
+            if (actual == null || expected == null || actual is UnknownScope)
+                return false;
+            if (actual is TemplateParameterScope || actual.IsGenericParameter)
+                return true;
+            var expectedArguments = expected.GetInstances();
+            var actualArguments = actual.GetInstances();
+            if (expectedArguments != null && expectedArguments.Count > 0 &&
+                HaveSameGenericTypeDefinition(actual, expected))
+            {
+                if (actualArguments == null || actualArguments.Count != expectedArguments.Count)
+                    return false;
+                var definition = expected.GenericTypeDefinition as CompiledScope;
+                var parameters = definition?.CompiledType.GetGenericArguments();
+                for (int i = 0; i < expectedArguments.Count; i++)
+                {
+                    bool variant = parameters != null &&
+                        (parameters[i].GenericParameterAttributes & GenericParameterAttributes.Covariant) != 0;
+                    if (!MatchesExtensionArgument(actualArguments[i], expectedArguments[i], variant))
+                        return false;
+                }
+                return true;
+            }
+            if (actual.IsArray && expected.IsArray)
+                return actual.Rank == expected.Rank &&
+                    MatchesExtensionArgument(actual.GetElementType(), expected.GetElementType(), true);
+            if (actual.IsEqual(expected))
+                return true;
+            // Generic covariance permits reference conversions, not numeric conversions.
+            return covariant && actual is CompiledScope actualCompiled && expected is CompiledScope expectedCompiled &&
+                !actualCompiled.CompiledType.IsValueType &&
+                expectedCompiled.CompiledType.IsAssignableFrom(actualCompiled.CompiledType);
+        }
+
+        protected static bool HaveSameGenericTypeDefinition(TypeScope left, TypeScope right)
+        {
+            if (left is CompiledScope leftCompiled && right is CompiledScope rightCompiled &&
+                leftCompiled.CompiledType.IsGenericType && rightCompiled.CompiledType.IsGenericType)
+                return leftCompiled.CompiledType.GetGenericTypeDefinition() == rightCompiled.CompiledType.GetGenericTypeDefinition();
+            return (left.original_type ?? left.GenericTypeDefinition) ==
+                   (right.original_type ?? right.GenericTypeDefinition);
         }
         
         private bool hasUsesCycle(SymScope unit, int deep=0)
@@ -2520,6 +2600,149 @@ namespace CodeCompletion
             return false;
         }
 
+        internal SymInfo GetExtensionCompletionInfo(TypeScope receiver)
+        {
+            var original = WithRefreshedDescription().si;
+            if (!IsExtension || template_parameters == null || template_parameters.Count == 0 ||
+                receiver == null ||
+                !(parameters?.FirstOrDefault()?.sc is TypeScope pattern) ||
+                !(CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport is
+                    PascalABCCompiler.Parsers.BaseLanguageIntellisenseSupport formatter) ||
+                documentation?.StartsWith("-", StringComparison.Ordinal) == true)
+                return original;
+
+            var candidates = new List<TypeScope> { receiver };
+            // A bare generic receiver (Self: T) binds to the actual receiver itself.
+            if (!IsCompletionTypeParameter(pattern))
+            {
+                for (var current = receiver.baseScope; current != null; current = current.baseScope)
+                    candidates.Add(current);
+                var interfaces = receiver.GetAllImplementedInterfaces();
+                if (interfaces != null)
+                    candidates.AddRange(interfaces);
+            }
+
+            Dictionary<string, TypeScope> inferred = null;
+            foreach (var candidate in candidates)
+            {
+                var bindings = new Dictionary<string, TypeScope>(StringComparer.OrdinalIgnoreCase);
+                if (!MatchCompletionReceiver(pattern, candidate, bindings))
+                    continue;
+                if (!IsKnownCompletionType(candidate))
+                    return original;
+                if (inferred == null)
+                    inferred = bindings;
+                else if (inferred.Count != bindings.Count || inferred.Any(binding =>
+                    !bindings.TryGetValue(binding.Key, out var type) ||
+                    !MatchCompletionReceiver(binding.Value, type, null)))
+                    return original;
+            }
+            if (inferred == null || inferred.Count == 0)
+                return original;
+
+            var display = SubstituteCompletionSignature(this, inferred);
+            var remainingParameters = template_parameters.Where(name => !inferred.ContainsKey(name)).ToList();
+            display.template_parameters = remainingParameters.Count > 0 ? remainingParameters : null;
+            string description = formatter.GetDescriptionForProcedure(display);
+            int docsStart = original.description?.IndexOf('\n') ?? -1;
+            string docs = docsStart >= 0 ? original.description.Substring(docsStart + 1) : null;
+            // Deferred XML documentation is attached to the original symbol.
+            // Read it from the same cache for this independent completion item.
+            var compiled = this as CompiledMethodScope;
+            if (string.IsNullOrWhiteSpace(docs) && compiled != null)
+                docs = AssemblyDocCache.GetDocumentation(compiled.mi);
+            var completion = new SymInfo(original) { description = description };
+            if (!string.IsNullOrWhiteSpace(docs))
+            {
+                completion.description += "\n" + docs;
+                completion.has_doc = true;
+            }
+            return completion;
+        }
+
+        private bool IsCompletionTypeParameter(TypeScope type) =>
+            (type is TemplateParameterScope || type is UnknownScope || type.IsGenericParameter) &&
+            template_parameters.Any(name => string.Equals(name, type.Name, StringComparison.OrdinalIgnoreCase));
+
+        private bool MatchCompletionReceiver(TypeScope pattern, TypeScope actual, Dictionary<string, TypeScope> bindings)
+        {
+            pattern = (pattern as TypeSynonim)?.GetLeafActType() ?? pattern;
+            actual = (actual as TypeSynonim)?.GetLeafActType() ?? actual;
+            if (pattern == null || actual == null)
+                return false;
+            if (bindings != null && IsCompletionTypeParameter(pattern))
+            {
+                if (!IsKnownCompletionType(actual))
+                    return true;
+                if (bindings.TryGetValue(pattern.Name, out var previous))
+                    return MatchCompletionReceiver(previous, actual, null);
+                bindings.Add(pattern.Name, actual);
+                return true;
+            }
+            if (pattern.IsArray || actual.IsArray)
+                return pattern.IsArray && actual.IsArray && pattern.Rank == actual.Rank &&
+                    MatchCompletionReceiver(pattern.GetElementType(), actual.GetElementType(), bindings);
+            var patternArguments = pattern.GetInstances();
+            var actualArguments = actual.GetInstances();
+            if (patternArguments == null || patternArguments.Count == 0)
+                return (actualArguments == null || actualArguments.Count == 0) && pattern.IsEqual(actual);
+            return HaveSameGenericTypeDefinition(pattern, actual) &&
+                actualArguments?.Count == patternArguments.Count &&
+                patternArguments.Zip(actualArguments, (expected, found) =>
+                    MatchCompletionReceiver(expected, found, bindings)).All(matches => matches);
+        }
+
+        private static bool IsKnownCompletionType(TypeScope type)
+        {
+            type = (type as TypeSynonim)?.GetLeafActType() ?? type;
+            if (type == null || type is UnknownScope || type is TemplateParameterScope || type.IsGenericParameter)
+                return false;
+            if (type.IsArray)
+                return IsKnownCompletionType(type.GetElementType());
+            var arguments = type.GetInstances();
+            // CompiledScope can use the CLR definition with separate Pascal type arguments.
+            if (type is CompiledScope compiled && compiled.CompiledType.IsGenericTypeDefinition &&
+                (arguments == null || arguments.Count != compiled.CompiledType.GetGenericArguments().Length))
+                return false;
+            return arguments?.All(IsKnownCompletionType) != false;
+        }
+
+        private ProcScope SubstituteCompletionSignature(ProcScope procedure, Dictionary<string, TypeScope> inferred)
+        {
+            var display = (ProcScope)procedure.CopyWithNewSymInfo();
+            if (!(procedure.return_type is ProcType resultType && resultType.target == procedure))
+                display.return_type = SubstituteCompletionType(procedure.return_type, inferred);
+            display.parameters = procedure.parameters?.Select(parameter =>
+            {
+                var result = (ElementScope)parameter.CopyWithNewSymInfo();
+                result.sc = SubstituteCompletionType(parameter.sc as TypeScope, inferred) ?? parameter.sc;
+                return result;
+            }).ToList();
+            return display;
+        }
+
+        private TypeScope SubstituteCompletionType(TypeScope type, Dictionary<string, TypeScope> inferred)
+        {
+            if (type == null)
+                return null;
+            if (IsCompletionTypeParameter(type) && inferred.TryGetValue(type.Name, out var replacement))
+                return replacement;
+            if (type is ProcType procedure && procedure.target != this)
+                return new ProcType(SubstituteCompletionSignature(procedure.target, inferred));
+            if (type is ArrayScope)
+            {
+                var display = (TypeScope)type.CopyWithNewSymInfo();
+                display.elementType = SubstituteCompletionType(type.GetElementType(), inferred);
+                return display;
+            }
+            var arguments = type.GetInstances();
+            if (arguments == null || arguments.Count == 0)
+                return type;
+            var instance = (TypeScope)type.CopyWithNewSymInfo();
+            instance.instances = arguments.Select(argument => SubstituteCompletionType(argument, inferred)).ToList();
+            return instance;
+        }
+
         public ProcScope GetInstance(List<TypeScope> gen_args)
         {
             if (this is CompiledMethodScope compiled && compiled.mi.DeclaringType == typeof(Enumerable) &&
@@ -3897,7 +4120,7 @@ namespace CodeCompletion
 #if PABCNET_MODERN
         private IEnumerable<SymInfo> GetDotNetExtensionMethods()
         {
-            return GetDotNetExtensionMethodScopes().Select(scope => scope.si);
+            return GetDotNetExtensionMethodScopes().Select(scope => scope.GetExtensionCompletionInfo(this));
         }
 
         private IEnumerable<CompiledMethodScope> GetDotNetExtensionMethodScopes(string name = null)
@@ -6868,7 +7091,9 @@ namespace CodeCompletion
                             {
                                 SymInfo si2 = new SymInfo(null, SymbolKind.Method, null);
 
-                                AddSymInfoWithAccessCheck(syms, new CompiledMethodScope(si2, mi as MethodInfo, this).si, ev);
+                                var method = new CompiledMethodScope(si2, mi as MethodInfo, this);
+                                AddSymInfoWithAccessCheck(syms,
+                                    method.IsExtension ? method.GetExtensionCompletionInfo(this) : method.si, ev);
                             }
                             break;
                         case MemberTypes.Field:

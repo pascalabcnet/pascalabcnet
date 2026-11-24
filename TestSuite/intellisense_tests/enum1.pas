@@ -2,5 +2,5 @@
 begin
   var l: (A,B,C);
   l := l.A{@@};
-  MyEnum.green{@const green: (red,green) = green;@};
+  MyEnum.green{@const green: (red, green)@};
 end.

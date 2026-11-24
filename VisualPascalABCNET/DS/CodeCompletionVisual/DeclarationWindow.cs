@@ -9,48 +9,34 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
 	public class DeclarationWindow : DeclarationViewWindow
 	{
-		public bool in_completion_list;
+		internal const int CompletionGap = 2;
+		internal Form CompletionWindow { get; set; }
 		
 		public DeclarationWindow(Form parent):base(parent)
 		{
 			
 		}
 		
-		private bool has_tags()
-		{
-			return Description.Contains("<returns>") || Description.Contains("<params>");
-		}
-		
 		protected override void OnPaint(PaintEventArgs pe)
 		{
-			//pe.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-			if (Description != null && Description.Length > 0) {
-				if (!in_completion_list)
-					ICSharpCode.TextEditor.Util.TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font, null, Description,-1, -1, false);
-				else
-				{
-					if (has_tags())
-					{
-						string tmp = Description;
-						int return_ind = tmp.IndexOf("<returns>");
-						int params_ind = tmp.IndexOf("<params>");
-						if (return_ind != -1 && params_ind != -1)
-							tmp = tmp.Substring(0,Math.Min(return_ind,params_ind)).Trim(' ','\n','\t','\r');
-						else
-						if (return_ind == -1)
-							tmp = tmp.Substring(0,params_ind).Trim(' ','\n','\t','\r');
-						else
-							tmp = tmp.Substring(0,return_ind).Trim(' ','\n','\t','\r');
-						Description = tmp;
-						return;
-					}
-					else
-					base.OnPaint(pe);
-					
-				}
-			}
-			else
+			string description = Description;
+			if (string.IsNullOrEmpty(description))
+			{
 				base.OnPaint(pe);
+				return;
+			}
+
+			if (CompletionWindow != null)
+			{
+				int returnsIndex = description.IndexOf("<returns>", StringComparison.Ordinal);
+				int paramsIndex = description.IndexOf("<params>", StringComparison.Ordinal);
+				int detailsIndex = returnsIndex < 0 ? paramsIndex
+					: paramsIndex < 0 ? returnsIndex : Math.Min(returnsIndex, paramsIndex);
+				if (detailsIndex >= 0)
+					description = description.Substring(0, detailsIndex).TrimEnd();
+			}
+			ICSharpCode.TextEditor.Util.TipPainterTools.DrawHelpTipFromCombinedDescription(
+				this, pe.Graphics, Font, null, description, -1, -1, false);
 		}
 	}
 }

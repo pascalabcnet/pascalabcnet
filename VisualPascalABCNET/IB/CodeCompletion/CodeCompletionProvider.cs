@@ -447,7 +447,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Возвращает массив подсказок для случая нажатия пользователем "триггерной" клавиши
         /// </summary>
-        public ICompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, KeywordKind keywordKind)
+        public ICompletionData[] GetCompletionData(int off, string text, int line, int col, char charTyped, KeywordKind keywordKind, string documentText = null)
         {
             List<ICompletionData> resultList = new List<ICompletionData>();
             try
@@ -494,8 +494,9 @@ namespace VisualPascalABC
                         return null;
                 }
 
-                SymInfo[] symInfos = GetSymInfosForCompletionData(line, col, in context, currentLanguage.CaseSensitive,
-                    expressionText, ctrlOrShiftSpaceAfterDot, insidePatternWithDots, pattern, expr, out var selectedSymInfo, out var lastUsedMember, out var shouldReturnNull2);
+                SymInfo[] symInfos = GetSymInfosForCompletionData(line, col, context, currentLanguage.CaseSensitive,
+                    expressionText, ctrlOrShiftSpaceAfterDot, insidePatternWithDots, pattern, expr, documentText, off,
+                    out var selectedSymInfo, out var lastUsedMember, out var shouldReturnNull2);
 
                 if (shouldReturnNull2)
                     return null;
@@ -560,13 +561,14 @@ namespace VisualPascalABC
         /// Формирует массив данных из таблицы символов для подсказок в случае нажатия пользователем "триггерной" клавиши 
         /// (в зависимости от введенного выражения и другого контекста)
         /// </summary>
-        private SymInfo[] GetSymInfosForCompletionData(int line, int col, in CodeCompletion.CompletionTriggerContext context, bool languageCaseSensitive, string expressionText, bool ctrlOrShiftSpaceAfterDot, bool insidePatternWithDots, string pattern, PascalABCCompiler.SyntaxTree.expression expr, out SymInfo selectedSymInfo, out string lastUsedMember, out bool shouldReturnNull)
+        private SymInfo[] GetSymInfosForCompletionData(int line, int col, CodeCompletion.CompletionTriggerContext context, bool languageCaseSensitive, string expressionText, bool ctrlOrShiftSpaceAfterDot, bool insidePatternWithDots, string pattern, PascalABCCompiler.SyntaxTree.expression expr, string documentText, int receiverEnd, out SymInfo selectedSymInfo, out string lastUsedMember, out bool shouldReturnNull)
         {
             lastUsedMember = null;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[FileName];
             var smartIntellisense = WorkbenchServiceFactory.Workbench.UserOptions.EnableSmartIntellisense;
-            var result = CodeCompletion.CompletionSymbolService.GetSymbols(
-                dconv,
+            Func<CodeCompletion.DomConverter, CodeCompletion.CompletionSymbolResult> getSymbols = converter =>
+                CodeCompletion.CompletionSymbolService.GetSymbols(
+                converter,
                 line,
                 col,
                 context,
@@ -579,6 +581,15 @@ namespace VisualPascalABC
                 keyword,
                 smartIntellisense,
                 VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
+
+            var result = getSymbols(dconv);
+            if (context.DotPressed && expr != null && documentText != null &&
+                (result.Symbols == null || result.Symbols.Length == 0))
+            {
+                var recovered = controller.CompileForDotCompletion(FileName, documentText, receiverEnd, tryWholeFile: true);
+                if (recovered?.is_compiled == true)
+                    result = getSymbols(recovered);
+            }
 
             selectedSymInfo = result.SelectedSymbol;
             shouldReturnNull = result.ShouldAbortCompletion;
@@ -608,10 +619,11 @@ namespace VisualPascalABC
         {
             controller = new CodeCompletion.CodeCompletionController();
             int off = textArea.Caret.Offset;
-            string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
+            string documentText = textArea.Document.TextContent;
+            string text = documentText.Substring(0, off);
             //controller.Compile(file_name, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
-            ICompletionData[] data = GetCompletionData(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
+            ICompletionData[] data = GetCompletionData(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw, documentText);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();
             CodeCompletion.UnitDocCache.CompleteDocumentation();
             controller = null;

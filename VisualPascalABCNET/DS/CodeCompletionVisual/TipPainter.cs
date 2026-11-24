@@ -5,9 +5,11 @@
 //     <version>$Revision: 2487 $</version>
 // </file>
 
+using System;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.TextEditor.Util
 {
@@ -92,10 +94,16 @@ namespace ICSharpCode.TextEditor.Util
 		{
 			Size tipSize = Size.Empty;
 			SizeF tipSizeF = SizeF.Empty;
-			
-			PointF screenLocation = control.PointToScreen(Point.Empty);
-			
-			if (workingArea == RectangleF.Empty) {
+			var declaration = control as DeclarationWindow;
+			Form completionWindow = declaration == null ? null : declaration.CompletionWindow;
+			Rectangle screen = Rectangle.Empty;
+			int descriptionLeft = 0;
+			int descriptionWidth = 0;
+			if (completionWindow != null) {
+				screen = Screen.GetWorkingArea(completionWindow.Bounds);
+				descriptionLeft = completionWindow.Right + DeclarationWindow.CompletionGap;
+				descriptionWidth = Math.Max(0, screen.Right - descriptionLeft);
+			} else if (workingArea == RectangleF.Empty) {
 				Form ownerForm = control.FindForm();
 				if (ownerForm.Owner != null) {
 					ownerForm = ownerForm.Owner;
@@ -104,8 +112,9 @@ namespace ICSharpCode.TextEditor.Util
 				workingArea = Screen.GetWorkingArea(ownerForm);
 			}
 				
-			SizeF maxLayoutSize = new SizeF(workingArea.Right /*- screenLocation.X*/ - HorizontalBorder * 2,
-			                                workingArea.Bottom /*- screenLocation.Y*/ - VerticalBorder * 2);
+			SizeF maxLayoutSize = completionWindow == null
+				? new SizeF(workingArea.Right - HorizontalBorder * 2, workingArea.Bottom - VerticalBorder * 2)
+				: new SizeF(descriptionWidth - HorizontalBorder * 2 - 8, screen.Height - VerticalBorder * 2);
 			if (maxLayoutSize.Width > 0 && maxLayoutSize.Height > 0) {
 				/*graphics.TextRenderingHint =
 				TextRenderingHint.AntiAliasGridFit;*/
@@ -119,7 +128,15 @@ namespace ICSharpCode.TextEditor.Util
 				tipSize = Size.Ceiling(tipSizeF);
 			}
 			
-			if (control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow)
+			if (completionWindow != null)
+			{
+				tipSize = new Size(Math.Min(tipSize.Width, descriptionWidth), Math.Min(tipSize.Height, screen.Height));
+				int y = Math.Max(screen.Top, Math.Min(completionWindow.Top, screen.Bottom - tipSize.Height));
+				Point position = new Point(descriptionLeft, y);
+				if (control.Location != position)
+					control.Location = position;
+			}
+			else if (control is ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow)
 			{
 				Rectangle rect = Rectangle.Ceiling(workingArea);
 				Point pt = (control as ICSharpCode.TextEditor.Gui.InsightWindow.PABCNETInsightWindow).GetCusorCoord();
@@ -161,5 +178,6 @@ namespace ICSharpCode.TextEditor.Util
 			}
 			return tipSize;
 		}
+
 	}
 }

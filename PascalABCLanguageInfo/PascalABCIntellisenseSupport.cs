@@ -89,6 +89,27 @@ namespace Languages.Pascal.Frontend.Data
 
         public override string GetDescription(IBaseScope scope)
         {
+            if (scope is IElementScope element && element.ElemKind == SymbolKind.Constant &&
+                element.ConstantValue is bool value &&
+                string.Equals(element.Name, value ? "True" : "False", StringComparison.OrdinalIgnoreCase))
+                return value ? "const True: boolean" : "const False: boolean";
+
+            if (scope is IElementScope constant &&
+                (constant.ElemKind == SymbolKind.Constant ||
+                 constant is ICompiledFieldScope field && field.CompiledField.IsLiteral))
+            {
+                var type = constant.Type;
+                while (type is ITypeSynonimScope synonym)
+                    type = synonym.ActType;
+                if (type is IEnumScope enumeration)
+                {
+                    string typeName = GetSimpleDescription(constant.Type);
+                    return "const " + constant.Name + ": " + typeName;
+                }
+                if (type is ICompiledTypeScope compiled && compiled.CompiledType.IsEnum)
+                    return "const " + constant.Name + ": " + GetSimpleDescription(constant.Type);
+            }
+
             switch (scope.Kind)
             {
                 case ScopeKind.Type: return GetDescriptionForType(scope as ITypeScope);
@@ -1384,6 +1405,21 @@ namespace Languages.Pascal.Frontend.Data
                     return FindExpressionFromAnyPosition(off - start, Text.Substring(start, end - start),
                         line, col, out keyw, out expr_without_brackets);
                 keyw = KeywordKind.Punkt;
+                expr_without_brackets = null;
+                return null;
+            }
+            // exit(value) is a statement. Parsing it as a call can instead
+            // resolve its argument and show that argument's description.
+            int tokenStart = off;
+            int tokenEnd = off;
+            while (tokenStart > 0 && (char.IsLetterOrDigit(Text[tokenStart - 1]) || Text[tokenStart - 1] == '_' || Text[tokenStart - 1] == '&'))
+                tokenStart--;
+            while (tokenEnd < Text.Length && (char.IsLetterOrDigit(Text[tokenEnd]) || Text[tokenEnd] == '_'))
+                tokenEnd++;
+            if (tokenStart >= 0 && tokenEnd - tokenStart == 4 &&
+                string.Compare(Text, tokenStart, "exit", 0, 4, StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                keyw = KeywordKind.None;
                 expr_without_brackets = null;
                 return null;
             }

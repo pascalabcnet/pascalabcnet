@@ -68,7 +68,10 @@ namespace ICSharpCode.TextEditor.Util
 
                     var languageIntellisenseSupport = CodeCompletion.CodeCompletionController.CurrentLanguage.LanguageIntellisenseSupport;
 
-                    int startIndex = basicDescription.IndexOf("(", basicDescription.IndexOf("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION")) + 1) + 1;
+                    int open = CodeCompletion.SignatureHelpService.FindParameterListStart(basicDescription);
+                    if (open < 0)
+                        return;
+                    int startIndex = open + 1;
 
                     int paranthesisIndex = languageIntellisenseSupport.FindClosingParenthesis(basicDescription.Substring(startIndex), ')');
 

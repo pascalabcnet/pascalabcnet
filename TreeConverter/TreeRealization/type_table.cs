@@ -824,9 +824,10 @@ namespace PascalABCCompiler.TreeRealization
             var ctnl = left as compiled_type_node;
             var ctnr = right as compiled_type_node;
             if (ctnl != null && ctnr != null && ctnl.original_generic == ctnr.original_generic
-                && ctnl.compiled_type.IsInterface && ctnl.generic_params != null && ctnl.generic_params.Count == 1)
+                && ctnr.original_generic is compiled_type_node genericInterface
+                && ctnl.compiled_type.IsInterface && ctnl.generic_params?.Count == 1 && ctnr.generic_params?.Count == 1)
             {
-                var interf_compiled_type = (ctnr.original_generic as compiled_type_node).compiled_type;
+                var interf_compiled_type = genericInterface.compiled_type;
                 if ((interf_compiled_type.GetGenericArguments()[0].GenericParameterAttributes & System.Reflection.GenericParameterAttributes.Covariant) != 0)
                     return compare_types(ctnl.generic_params[0], ctnr.generic_params[0]);
             }

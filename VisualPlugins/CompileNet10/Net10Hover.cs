@@ -166,9 +166,11 @@ namespace VisualPascalABCPlugins
             // Folded text, error markers and debugger hints retain priority.
             if (!active || !enabled() || !e.InDocument || e.ToolTipShown ||
                 Control.ModifierKeys == Keys.Control) { Invalidate(); return; }
-            if (context?.Document == document && context.Contains(e.LogicalPosition)) return;
+            var area = document.TextEditor.ActiveTextAreaControl.TextArea;
+            var position = GetHoveredPosition(document, area.PointToClient(Control.MousePosition));
+            if (context?.Document == document && context.Contains(position)) return;
             Invalidate();
-            context = Net10HoverContext.Capture(document, e.LogicalPosition);
+            context = Net10HoverContext.Capture(document, position);
             if (context == null) return;
             cancellation = new CancellationTokenSource();
             _ = RequestAsync(context, generation, cancellation.Token);
@@ -178,7 +180,19 @@ namespace VisualPascalABCPlugins
         {
             var area = value.Document.TextEditor.ActiveTextAreaControl.TextArea;
             var bounds = area.TextView.DrawingPosition;
-            return bounds.Contains(mouse) && value.Contains(area.TextView.GetLogicalPosition(mouse.X - bounds.X, mouse.Y - bounds.Y));
+            return bounds.Contains(mouse) && value.Contains(GetHoveredPosition(value.Document, mouse));
+        }
+
+        private static TextLocation GetHoveredPosition(ICodeFileDocument document, Point mouse)
+        {
+            var view = document.TextEditor.ActiveTextAreaControl.TextArea.TextView;
+            int x = mouse.X - view.DrawingPosition.X;
+            var position = view.GetLogicalPosition(x, mouse.Y - view.DrawingPosition.Y);
+            // Logical positions round to the nearest caret boundary. Hover needs
+            // the character under the pointer, including its right half.
+            if (position.X > 0 && x < view.GetDrawingXPos(position.Y, position.X))
+                position.X--;
+            return position;
         }
 
         private async Task RequestAsync(Net10HoverContext value, long ticket, CancellationToken token)

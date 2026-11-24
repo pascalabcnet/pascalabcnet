@@ -215,6 +215,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 return Array.Empty<CompletionItem>();
 
             var state = GetCompiledState(documentId);
+            bool triedCompletionPrefix = false;
             // Recover a just-typed incomplete expression for this request only.
             if ((state is null || state.IsStale) &&
                 currentDocument != null && caretOffset > 0 && caretOffset <= currentDocument.Text.Length &&
@@ -224,6 +225,12 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 var analysis = afterNew ? currentDocument.Text.Insert(caretOffset, "object") :
                     currentDocument.Text.Remove(caretOffset - 1, 1).Insert(caretOffset - 1, " ");
                 var recovered = _controller.Compile(currentDocument.FileName, analysis);
+                if (!recovered.is_compiled && !afterNew && !_controller.PackageRestoreRequired)
+                {
+                    triedCompletionPrefix = true;
+                    recovered = _controller.CompileForDotCompletion(currentDocument.FileName,
+                        currentDocument.Text, caretOffset - 1, tryWholeFile: false) ?? recovered;
+                }
                 if (recovered.is_compiled)
                     state = new DocumentState(currentDocument, recovered,
                         GetDirectDependencies(recovered), 0, true, false, null);
@@ -288,6 +295,19 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 context,
                 expressionInfo,
                 items);
+
+            if (afterDot && !triedCompletionPrefix && (symbols is null || symbols.Length == 0) &&
+                !_controller.PackageRestoreRequired)
+            {
+                var recovered = _controller.CompileForDotCompletion(state.Document.FileName,
+                    text, caretOffset - 1, tryWholeFile: false);
+                if (recovered?.is_compiled == true)
+                {
+                    var completionState = state with { DomConverter = recovered };
+                    symbols = GetCompletionSymbols(completionState, position, textBeforeCaret,
+                        caretOffset, context, expressionInfo, items);
+                }
+            }
 
             var completionItems = CreateCompletionItems(items, symbols);
             if (string.IsNullOrEmpty(expressionInfo.Pattern))
@@ -431,7 +451,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
     {
         return ExecuteSerializedAsync(() =>
         {
-            var state = GetCompiledState(documentId);
+            var state = GetCompiledState(documentId, requireSuccessful: false);
             if (state is null)
                 return null;
 
@@ -586,7 +606,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
     {
         return ExecuteSerializedAsync(() =>
         {
-            var state = GetCompiledState(documentId);
+            var state = GetCompiledState(documentId, requireSuccessful: false);
             if (state is null)
                 return null;
 
@@ -653,7 +673,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
         }
     }
 
-    private DocumentState? GetCompiledState(string documentId)
+    private DocumentState? GetCompiledState(string documentId, bool requireSuccessful = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
 
@@ -668,7 +688,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
             document is not null)
             CompileAndStore(document);
 
-        return _states.TryGetValue(documentId, out var state) && state.DomConverter.is_compiled
+        return _states.TryGetValue(documentId, out var state) && (!requireSuccessful || state.DomConverter.is_compiled)
             ? state
             : null;
     }

@@ -86,7 +86,10 @@ namespace CodeCompletion
 
                 try
                 {
-                var content = File.ReadAllText(FileName);
+                // Position helpers below count Environment.NewLine characters.
+                // Git fixtures can contain LF even when the runner uses Windows.
+                var content = File.ReadAllText(FileName).Replace("\r\n", "\n")
+                    .Replace("\r", "\n").Replace("\n", Environment.NewLine);
                 var dc = controller.Compile(FileName, content);
                 
                 string expr_without_brackets = null;

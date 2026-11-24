@@ -106,6 +106,9 @@ namespace PascalABCCompiler.Parsers
                 case ParseMode.Special:
                     root = BuildTreeInSpecialMode(FileName, Text, compilingNotMainProgram);
                     break;
+                case ParseMode.CompletionPrefix:
+                    root = BuildTreeFromCompletionPrefix(FileName, Text, DefinesList);
+                    break;
                 case ParseMode.ForFormatter:
                     root = BuildTreeInFormatterMode(FileName, Text);
                     break;
@@ -139,6 +142,8 @@ namespace PascalABCCompiler.Parsers
         protected abstract syntax_tree_node BuildTreeInExprMode(string FileName, string Text);
 
         protected abstract syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text, bool compilingNotMainProgram);
+
+        protected virtual syntax_tree_node BuildTreeFromCompletionPrefix(string fileName, string text, List<string> defines) => null;
 
         protected abstract syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text);
 
