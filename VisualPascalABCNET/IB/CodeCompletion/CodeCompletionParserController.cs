@@ -1,8 +1,12 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using PascalABCCompiler.CoreUtils;
 using PascalABCCompiler.Contracts.CodeCompletion;
 
@@ -12,11 +16,15 @@ namespace VisualPascalABC
 
     public class CodeCompletionParserController : VisualPascalABCPlugins.ICodeCompletionService
     {
-        public static Dictionary<string, bool> filesToParse = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        public static ConcurrentDictionary<string, bool> filesToParse = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         public VisualEnvironmentCompiler visualEnvironmentCompiler;
         private System.Threading.Thread th = null;
         private CodeCompletionProvider ccp;
+        private readonly AutoResetEvent parseRequested = new AutoResetEvent(false);
+        private readonly TaskCompletionSource<bool> initialPascalAnalysis =
+            new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         public event ParseInformationUpdatedDelegate ParseInformationUpdated;
+        internal Task InitialPascalAnalysis { get { return initialPascalAnalysis.Task; } }
 
         public void StopParseThread()
         {
@@ -80,26 +88,28 @@ namespace VisualPascalABC
                 // Save As must still succeed and leave the new name ready for analysis.
                 if (!filesToParse.TryGetValue(OldFileName, out bool pending)) pending = true;
                 filesToParse[NewFileName] = pending;
-                filesToParse.Remove(OldFileName);
+                filesToParse.TryRemove(OldFileName, out _);
             }
         }
 
         public void RegisterFileForParsing(string FileName)
         {
             filesToParse[FileName] = true;
+            if (string.Equals(Path.GetExtension(FileName), ".pas", StringComparison.OrdinalIgnoreCase))
+                parseRequested.Set();
         }
 
         public void CloseFile(string FileName)
         {
             if (CodeCompletion.CodeCompletionController.comp_modules[FileName] != null)
                 CodeCompletion.CodeCompletionController.comp_modules.Remove(FileName);
-            filesToParse.Remove(FileName);
+            filesToParse.TryRemove(FileName, out _);
         }
 
         public void SetAsChanged(string FileName)
         {
-            if (FileName != null && filesToParse.ContainsKey(FileName))
-                filesToParse[FileName] = true;
+            if (FileName != null)
+                filesToParse.TryUpdate(FileName, true, false);
         }
 
         public void SetAllInProjectChanged()
@@ -109,7 +119,7 @@ namespace VisualPascalABC
                 foreach (string s in filesToParse.Keys.ToArray())
                 {
                     if (ProjectFactory.Instance.CurrentProject.ContainsSourceFile(s))
-                        filesToParse[s] = true;
+                        filesToParse.TryUpdate(s, true, false);
                 }
             }
             catch (Exception) { }
@@ -117,7 +127,8 @@ namespace VisualPascalABC
 
         public void InvalidateAllFiles()
         {
-            foreach (string fileName in filesToParse.Keys.ToArray()) filesToParse[fileName] = true;
+            foreach (string fileName in filesToParse.Keys)
+                filesToParse.TryUpdate(fileName, true, false);
         }
 
         public void ResumeForOpenDocuments(IEnumerable<string> fileNames)
@@ -132,6 +143,8 @@ namespace VisualPascalABC
         /// </summary>
         public void SwitchOnIntellisence()
         {
+            if (th != null && th.IsAlive)
+                return;
             th = new System.Threading.Thread(InternalParsing);
             th.Priority = System.Threading.ThreadPriority.BelowNormal;
             th.IsBackground = true;
@@ -155,7 +168,7 @@ namespace VisualPascalABC
             while (true)
             {
                 ParseInThread();
-                System.Threading.Thread.Sleep(2000);
+                parseRequested.WaitOne(2000);
             }
         }
 
@@ -171,17 +184,25 @@ namespace VisualPascalABC
                 foreach (string FileName in filesToParse.Keys.ToArray()) // копирование ключей обязательно, иначе будет InvalidOperationException EVA
                 {
 
-                    if (filesToParse[FileName])
+                    if (filesToParse.TryUpdate(FileName, false, true))
                     {
-                        // Попытка компиляции была
-                        filesToParse[FileName] = false;
-
                         is_comp = true;
                         string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, SourceFileOperation.GetText) as string;
                         if (string.IsNullOrEmpty(text))
                             text = "begin end.";
 
-                        if (CompileWatchedFile(FileName, text, true))
+                        bool compiled;
+                        try
+                        {
+                            compiled = CompileWatchedFile(FileName, text, true);
+                        }
+                        finally
+                        {
+                            if (!CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended &&
+                                string.Equals(Path.GetExtension(FileName), ".pas", StringComparison.OrdinalIgnoreCase))
+                                initialPascalAnalysis.TrySetResult(true);
+                        }
+                        if (compiled)
                         {
                             // успешная компиляция
                             recomp_files.Add(FileName);
@@ -251,9 +272,9 @@ namespace VisualPascalABC
             CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[fileName] as CodeCompletion.DomConverter;
             long cur_mem = Environment.WorkingSet;
             CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
-            CodeCompletion.DomConverter dc = controller.Compile(fileName, fileText);
+            CodeCompletion.DomConverter dc = controller.CompileOpenDocument(fileName, fileText, publishModule: false);
             // A parse already in flight may finish after the platform switch. Do not publish it.
-            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended) return false;
+            if (CodeCompletion.CodeCompletionController.LegacyAnalysisSuspended || !filesToParse.ContainsKey(fileName)) return false;
             mem_delta += Environment.WorkingSet - cur_mem;
             
             if (dc.is_compiled)
@@ -277,7 +298,7 @@ namespace VisualPascalABC
         /// <summary>
         /// Помечает модули из candidateModulesToCheck и watchedFiles для будущей перекомпиляции, если они завивисимы от модуля с именем recompiledDependencyName
         /// </summary>
-        private void InvalidateDependentModules(CodeCompletion.SymScope[] candidateModulesToCheck, string recompiledDependencyName, Dictionary<string, bool> watchedFiles, string currentFileForRecompiling)
+        private void InvalidateDependentModules(CodeCompletion.SymScope[] candidateModulesToCheck, string recompiledDependencyName, ConcurrentDictionary<string, bool> watchedFiles, string currentFileForRecompiling)
         {
             // Скоупы модулей, соответствующих watchedFiles
             var compiledWatchedScopes = watchedFiles.Where(watchedFile => watchedFile.Key != currentFileForRecompiling)
@@ -309,9 +330,10 @@ namespace VisualPascalABC
                     if (unitOldConverter != null)
                     {
                         // Помечаем для перекомпиляции
-                        if (watchedFiles.ContainsKey(scopeFileName))
+                        if (watchedFiles.TryGetValue(scopeFileName, out bool pending))
                         {
-                            watchedFiles[scopeFileName] = true;
+                            if (!pending)
+                                watchedFiles.TryUpdate(scopeFileName, true, false);
                         }
                         else
                         {

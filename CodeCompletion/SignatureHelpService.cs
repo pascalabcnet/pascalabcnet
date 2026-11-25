@@ -105,10 +105,23 @@ namespace CodeCompletion
                     ReferenceEquals(language, LanguageProvider.Instance.MainLanguage) &&
                     expression is PascalABCCompiler.SyntaxTree.dot_node)
                 {
-                    var recovered = CodeCompletionController.CompileCallPrefix(domConverter, fileName, textBeforeCaret, caretOffset);
+#if PABCNET_MODERN
+                    const bool deferSemanticCorrection = true;
+#else
+                    const bool deferSemanticCorrection = false;
+#endif
+                    // Resolve the callable from the recovered model before running the full compiler.
+                    var recovered = CodeCompletionController.CompileCallPrefix(domConverter, fileName, textBeforeCaret,
+                        caretOffset, deferSemanticCorrection);
                     if (recovered != null)
+                    {
                         signatures = recovered.GetNameOfMethod(expression, expressionText, line, column,
                             currentParameter, ref defaultIndex, currentParameterForSelection, out parameterCount);
+                        if (deferSemanticCorrection && (signatures == null || signatures.Length == 0) &&
+                            CodeCompletionController.ApplyDeferredSemanticCorrection(recovered))
+                            signatures = recovered.GetNameOfMethod(expression, expressionText, line, column,
+                                currentParameter, ref defaultIndex, currentParameterForSelection, out parameterCount);
+                    }
                 }
             }
             else if (language.LanguageIntellisenseSupport.IsOpenBracketForIndex(triggerCharacter))

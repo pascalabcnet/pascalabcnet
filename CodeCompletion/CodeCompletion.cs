@@ -121,6 +121,40 @@ namespace CodeCompletion
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         
         private static readonly object compilationLock = new object();
+        private static bool standardEnvironmentReady;
+
+        public DomConverter CompileOpenDocument(string fileName, string text, bool publishModule = true)
+        {
+            lock (compilationLock)
+            {
+                var document = CompileCore(fileName, text, ParseMode.Normal, publishModule);
+                if (!standardEnvironmentReady && LanguageProvider.SelectLanguageByExtensionSafe(fileName) == LanguageProvider.MainLanguage)
+                {
+                    // A file can already contain unfinished code when it is first opened.
+                    // In that case load the standard modules without publishing a model for the file.
+                    if (!document.is_compiled)
+                    {
+                        string warmupFile = Path.Combine(Path.GetDirectoryName(fileName) ?? "", "__pabc_intellisense_warmup.pas");
+                        var compilerOptions = comp?.CompilerOptions;
+                        string previousSource = compilerOptions?.SourceFileName;
+                        try
+                        {
+                            var warmup = new CodeCompletionController();
+                            standardEnvironmentReady = warmup.CompileCore(warmupFile, "begin end.", ParseMode.Normal, false,
+                                standardEnvironmentOnly: true).is_compiled;
+                        }
+                        finally
+                        {
+                            if (compilerOptions != null)
+                                compilerOptions.SourceFileName = previousSource;
+                        }
+                    }
+                    else
+                        standardEnvironmentReady = true;
+                }
+                return document;
+            }
+        }
 
         public DomConverter Compile(string FileName, string Text)
         {
@@ -144,18 +178,32 @@ namespace CodeCompletion
             }
         }
 
-        internal static DomConverter CompileCallPrefix(DomConverter previous, string fileName, string text, int calleeEnd)
+        internal static DomConverter CompileCallPrefix(DomConverter previous, string fileName, string text, int calleeEnd,
+            bool deferSemanticCorrection = false)
         {
+            if (calleeEnd <= 0 || calleeEnd > text.Length)
+                return null;
             var controller = previous == null ? new CodeCompletionController() : previous.controller;
 #if PABCNET_MODERN
             if (controller.PackageRestoreRequired)
                 return null;
 #endif
-            var recovered = controller.CompileForDotCompletion(fileName, text, calleeEnd, false);
-            return recovered != null && recovered.is_compiled ? recovered : null;
+            lock (compilationLock)
+            {
+                var recovered = controller.CompileCore(fileName, text.Substring(0, calleeEnd), ParseMode.CompletionPrefix,
+                    false, deferSemanticCorrection: deferSemanticCorrection);
+                return recovered.is_compiled ? recovered : null;
+            }
         }
 
-        private DomConverter CompileCore(string FileName, string Text, ParseMode mode, bool publishModule)
+        internal static bool ApplyDeferredSemanticCorrection(DomConverter converter)
+        {
+            lock (compilationLock)
+                return converter.ApplyDeferredSemanticCorrection();
+        }
+
+        private DomConverter CompileCore(string FileName, string Text, ParseMode mode, bool publishModule,
+            bool standardEnvironmentOnly = false, bool deferSemanticCorrection = false)
         {
 #if PABCNET_MODERN
             RefreshReferenceAssemblies();
@@ -212,6 +260,8 @@ namespace CodeCompletion
             TypeTable.Clear();
 
             DomConverter dconv = new DomConverter(this) { PublishModule = publishModule };
+            if (standardEnvironmentOnly)
+                dconv.visitor.parse_only_interface = true;
 #if PABCNET_MODERN
             dconv.AnalysisSourceText = Text;
             preparedReferencePaths = null;
@@ -220,12 +270,12 @@ namespace CodeCompletion
             if (cu != null)
             {
 #if PABCNET_MODERN
-                if (!PreparePackageReferences(cu, dconv))
+                if (!standardEnvironmentOnly && !PreparePackageReferences(cu, dconv))
                     return dconv;
 #endif
                 PascalABCCompiler.NetHelper.NetHelper.reset();
                 
-                dconv.ConvertToDom(cu);
+                dconv.ConvertToDom(cu, deferSemanticCorrection);
             }
             // Попытка поменять текст программы ниже сработает только для PascalABC.NET
             else if (mode == ParseMode.Normal && currentLanguage == LanguageProvider.MainLanguage)

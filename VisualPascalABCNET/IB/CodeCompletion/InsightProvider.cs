@@ -17,16 +17,18 @@ namespace VisualPascalABC
         private bool setupOnlyOnce;
         private int initialOffset;
         private char pressed_key;
+        private readonly bool triggerAlreadyInserted;
         public int defaultIndex = 0;
         public int num_param = 1;
         public int cur_param_num = 1;
         public int param_count;
 
-        public DefaultInsightDataProvider(int lookupOffset, bool setupOnlyOnce, char pressed_key)
+        public DefaultInsightDataProvider(int lookupOffset, bool setupOnlyOnce, char pressed_key, bool triggerAlreadyInserted = false)
         {
             this.lookupOffset = lookupOffset;
             this.setupOnlyOnce = setupOnlyOnce;
             this.pressed_key = pressed_key;
+            this.triggerAlreadyInserted = triggerAlreadyInserted;
         }
 
         private string FindExpression(int off, string Text, int line, int col)
@@ -57,10 +59,10 @@ namespace VisualPascalABC
                 int useOffset = (lookupOffset < 0) ? textArea.Caret.Offset : lookupOffset;
                 initialOffset = useOffset;
                 int i = initialOffset - 1;
-                int off = textArea.Caret.Offset;
-                string Text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
+                int off = triggerAlreadyInserted ? lookupOffset : textArea.Caret.Offset;
+                string Text = textArea.Document.GetText(0, off);
                 int line = textArea.Caret.Line;
-                int col = textArea.Caret.Column;
+                int col = textArea.Caret.Column - (triggerAlreadyInserted ? 1 : 0);
 
                 var language = Languages.Facade.LanguageProvider.Instance.SelectLanguageByExtensionSafe(fileName);
                 CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];

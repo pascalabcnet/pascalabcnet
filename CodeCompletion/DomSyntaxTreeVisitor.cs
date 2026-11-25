@@ -60,7 +60,12 @@ namespace CodeCompletion
         	node.type_name.visit(this);
         }
 
-		public void Convert(compilation_unit cu)
+        public void Convert(compilation_unit cu)
+        {
+            Convert(cu, false);
+        }
+
+        internal void Convert(compilation_unit cu, bool deferSemanticCorrection)
         {
             method_call_cache.Clear();
             nonTypeReferences.Clear();
@@ -82,7 +87,17 @@ namespace CodeCompletion
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
             cur_used_assemblies = new HashSet<Assembly>(PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies);
-            if (!CodeCompletionController.LegacyAnalysisSuspended && use_semantic_for_intellisense && !parse_only_interface)
+            if (!deferSemanticCorrection && CanApplySemanticCorrection)
+                ApplySemanticCorrection(cu);
+        }
+
+        internal bool CanApplySemanticCorrection
+        {
+            get { return !CodeCompletionController.LegacyAnalysisSuspended && use_semantic_for_intellisense && !parse_only_interface; }
+        }
+
+        internal void ApplySemanticCorrection(compilation_unit cu)
+        {
             try
             {
                 CorrectTreeWithSemantic(cu);

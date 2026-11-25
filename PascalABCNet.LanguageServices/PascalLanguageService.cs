@@ -714,7 +714,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
             analysisText = new string(chars);
         }
         _controller.RestorePackagesAutomatically = !ManualPackageRestore || explicitPackageRestore;
-        var domConverter = _controller.Compile(document.FileName, analysisText);
+        var domConverter = _controller.CompileOpenDocument(document.FileName, analysisText);
         SetPackageRestoreRequired(document.DocumentId, _controller.PackageRestoreRequired);
 
         if (domConverter.is_compiled)

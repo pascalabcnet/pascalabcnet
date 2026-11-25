@@ -133,21 +133,12 @@ namespace VisualPascalABC
             {
                 if (VisualPABCSingleton.MainForm.UserOptions.CodeCompletionParams)
                 {
-                    ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider idp = new DefaultInsightDataProvider(-1, false, key);
-                    if (insightWindow == null || insightWindow.InsightProviderStackLength == 0)
-                    {
-                        insightWindow = new PABCNETInsightWindow(VisualPABCSingleton.MainForm, editor);
-                        insightWindow.Font = new Font(Constants.CompletionInsightWindowFontName, insightWindow.Font.Size);
-                        insightWindow.Closed += new EventHandler(OnInsightWindowClosed);
-                    }
+                    var initialAnalysis = WorkbenchServiceFactory.CodeCompletionParserController.InitialPascalAnalysis;
+                    if (key == '(' && !initialAnalysis.IsCompleted &&
+                        string.Equals(System.IO.Path.GetExtension(editor.FileName), ".pas", StringComparison.OrdinalIgnoreCase))
+                        ShowInsightAfterInitialAnalysis(initialAnalysis);
                     else
-                    {
-                        (idp as DefaultInsightDataProvider).defaultIndex = insightWindow.GetCurrentData();
-                        (idp as DefaultInsightDataProvider).cur_param_num = (insightWindow.GetInsightProvider() as DefaultInsightDataProvider).param_count;
-
-                    }
-                    insightWindow.AddInsightDataProvider(idp, editor.FileName);
-                    insightWindow.ShowInsightWindow();
+                        ShowInsight(key);
                 }
             }
             else if (key == ' ')
@@ -257,6 +248,46 @@ namespace VisualPascalABC
             }*/
 
             return false;
+        }
+
+        private async void ShowInsightAfterInitialAnalysis(System.Threading.Tasks.Task initialAnalysis)
+        {
+            var area = editor.ActiveTextAreaControl.TextArea;
+            string fileName = editor.FileName;
+            var document = editor.Document;
+            int offset = area.Caret.Offset;
+            string prefix = document.GetText(0, offset);
+
+            // This key handler runs before the editor inserts the opening parenthesis.
+            await System.Threading.Tasks.Task.Yield();
+            await initialAnalysis;
+            if (editor.IsDisposed || !area.Focused || editor.Document != document ||
+                editor.FileName != fileName || area.Caret.Offset != offset + 1 ||
+                offset >= document.TextLength || document.GetCharAt(offset) != '(' ||
+                document.GetText(0, offset) != prefix ||
+                !CodeCompletion.CodeCompletionController.IntellisenseAvailable() ||
+                !VisualPABCSingleton.MainForm.UserOptions.CodeCompletionParams)
+                return;
+
+            ShowInsight('(', offset);
+        }
+
+        private void ShowInsight(char key, int insertedTriggerOffset = -1)
+        {
+            var provider = new DefaultInsightDataProvider(insertedTriggerOffset, false, key, insertedTriggerOffset >= 0);
+            if (insightWindow == null || insightWindow.InsightProviderStackLength == 0)
+            {
+                insightWindow = new PABCNETInsightWindow(VisualPABCSingleton.MainForm, editor);
+                insightWindow.Font = new Font(Constants.CompletionInsightWindowFontName, insightWindow.Font.Size);
+                insightWindow.Closed += new EventHandler(OnInsightWindowClosed);
+            }
+            else if (insightWindow.GetInsightProvider() is DefaultInsightDataProvider previous)
+            {
+                provider.defaultIndex = insightWindow.GetCurrentData();
+                provider.cur_param_num = previous.param_count;
+            }
+            insightWindow.AddInsightDataProvider(provider, editor.FileName);
+            insightWindow.ShowInsightWindow();
         }
 
         void OnInsightWindowClosed(object sender, EventArgs e)

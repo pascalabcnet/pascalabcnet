@@ -483,8 +483,10 @@ namespace CodeCompletion
         {
             // Candidate discovery also visits open definitions. Filter only
             // after returning to the receiver that supplies the actual arguments.
-            if (receiver is CompiledScope open && open.CompiledType.IsGenericTypeDefinition &&
-                open.GetInstances().Count == 0)
+            bool isOpenDefinition = receiver is CompiledScope compiled
+                ? compiled.CompiledType.IsGenericTypeDefinition
+                : receiver.original_type == null && receiver.generic_params?.Count > 0;
+            if (isOpenDefinition && (receiver.GetInstances()?.Count ?? 0) == 0)
                 return true;
             var expected = method.parameters?.FirstOrDefault()?.sc as TypeScope;
             if (expected is TypeSynonim synonym)
@@ -531,6 +533,12 @@ namespace CodeCompletion
                 var parameters = definition?.CompiledType.GetGenericArguments();
                 for (int i = 0; i < expectedArguments.Count; i++)
                 {
+                    // An implicit Pascal receiver parameter can be stored as an unresolved name.
+                    if (expectedArguments[i] is UnknownScope placeholder &&
+                        expected.original_type?.generic_params?.Any(name =>
+                            string.Equals(name, placeholder.Name, StringComparison.OrdinalIgnoreCase)) == true)
+                        continue;
+
                     bool variant = parameters != null &&
                         (parameters[i].GenericParameterAttributes & GenericParameterAttributes.Covariant) != 0;
                     if (!MatchesExtensionArgument(actualArguments[i], expectedArguments[i], variant))

@@ -19,7 +19,7 @@
   T11{@type T11 = List<integer>@} = List<integer>;
   T12{@type T12 = T5@} = T5;
   T13{@type T13 = 1..10@} = 1..10;
-  T14{@type T14 = sequence of Tuple<procedure,procedure>@} = sequence of (procedure, procedure);
+  T14{@type T14 = sequence of (procedure, procedure)@} = sequence of (procedure, procedure);
   
 begin
 end.

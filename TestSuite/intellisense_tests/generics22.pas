@@ -9,7 +9,7 @@
     
     public procedure p1;
     begin
-      l{@var t0<>.l: List<Tuple<word, byte>>;@} := l;
+      l{@var t0<>.l: List<(word, byte)>;@} := l;
     end;
     
   end;

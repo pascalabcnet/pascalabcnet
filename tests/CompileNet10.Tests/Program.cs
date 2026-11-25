@@ -120,7 +120,7 @@ internal static partial class Program
             string openedWhileModern = Path.GetFullPath("OpenedWhileNet10.pas");
             parser.RegisterFileForParsing(file);
             VisualPascalABC.CodeCompletionParserController.filesToParse[file] = false;
-            VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(openedWhileModern);
+            VisualPascalABC.CodeCompletionParserController.filesToParse.TryRemove(openedWhileModern, out _);
             suspended.SetValue(null, false);
             parser.ResumeForOpenDocuments(new[] { file, openedWhileModern });
             Check(VisualPascalABC.CodeCompletionParserController.filesToParse[file],
@@ -200,8 +200,8 @@ internal static partial class Program
                 suspended.SetValue(null, isSuspended);
                 modules.Remove(oldName);
                 modules.Remove(newName);
-                VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(oldName);
-                VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(newName);
+                VisualPascalABC.CodeCompletionParserController.filesToParse.TryRemove(oldName, out _);
+                VisualPascalABC.CodeCompletionParserController.filesToParse.TryRemove(newName, out _);
                 Console.WriteLine("CASE: Save As without legacy analysis entries; suspended=" + isSuspended);
                 parser.RenameFile(oldName, newName);
                 Check(!VisualPascalABC.CodeCompletionParserController.filesToParse.ContainsKey(oldName) &&
@@ -236,8 +236,8 @@ internal static partial class Program
         {
             modules.Remove(oldName);
             modules.Remove(newName);
-            VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(oldName);
-            VisualPascalABC.CodeCompletionParserController.filesToParse.Remove(newName);
+            VisualPascalABC.CodeCompletionParserController.filesToParse.TryRemove(oldName, out _);
+            VisualPascalABC.CodeCompletionParserController.filesToParse.TryRemove(newName, out _);
             suspended.SetValue(null, previousSuspension);
         }
     }

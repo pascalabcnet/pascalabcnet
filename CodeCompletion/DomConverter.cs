@@ -140,12 +140,31 @@ namespace CodeCompletion
 
         public void ConvertToDom(compilation_unit cu)
         {
+            ConvertToDom(cu, false);
+        }
+
+        private compilation_unit pendingSemanticUnit;
+
+        internal void ConvertToDom(compilation_unit cu, bool deferSemanticCorrection)
+        {
             if (CodeCompletionController.comp != null)
                 CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
-            visitor.Convert(cu);
+            visitor.Convert(cu, deferSemanticCorrection);
             is_compiled = visitor.ConversionSucceeded && visitor.entry_scope != null;
             cur_used_assemblies = visitor.cur_used_assemblies;
-            return;
+            if (is_compiled && deferSemanticCorrection && visitor.CanApplySemanticCorrection)
+                pendingSemanticUnit = cu;
+        }
+
+        internal bool ApplyDeferredSemanticCorrection()
+        {
+            var unit = pendingSemanticUnit;
+            if (unit == null)
+                return false;
+
+            pendingSemanticUnit = null;
+            visitor.ApplySemanticCorrection(unit);
+            return true;
         }
 
         public bool IsAssembliesChanged()

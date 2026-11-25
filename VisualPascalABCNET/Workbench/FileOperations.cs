@@ -91,12 +91,6 @@ namespace VisualPascalABC
                 }
                 //CloseButtonsEnabled = OpenDocuments.Count > 1;
                 ChangedSelectedTab();
-                // Track the document even while .NET 10 suspends legacy analysis.
-                // It must be parsed when the user switches back without reopening it.
-                if (FileName != null // SS 09.08.08
-                    && CodeCompletion.CodeCompletionController.CurrentLanguage?.LanguageIntellisenseSupport != null)
-                    WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(FileName);
-
             }
             if (tp != null)
             {
@@ -115,6 +109,10 @@ namespace VisualPascalABC
                 CloseButtonsEnabled = OpenDocuments.Count > 1;//Ivan 09.08.08 err 195 
             }
             visualStates.FileOpened = false;
+            // The parser may wake immediately. Register after the source provider can see the document.
+            if ((addedDocument || previousFileName != null) && FileName != null &&
+                CodeCompletion.CodeCompletionController.CurrentLanguage?.LanguageIntellisenseSupport != null)
+                WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(FileName);
 
             //ssyy
             if (!IsNewFile)
