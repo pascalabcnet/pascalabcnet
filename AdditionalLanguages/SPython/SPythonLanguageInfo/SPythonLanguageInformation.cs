@@ -1,4 +1,4 @@
-﻿using PascalABCCompiler.Contracts.Parsers;
+using PascalABCCompiler.Contracts.Parsers;
 using PascalABCCompiler.Contracts.Languages;
 using System.Collections.Generic;
 
