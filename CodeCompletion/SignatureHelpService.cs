@@ -71,6 +71,23 @@ namespace CodeCompletion
             int currentParameter,
             int currentParameterForSelection)
         {
+            return GetSignatureHelp(language, domConverter, fileName, textBeforeCaret, caretOffset, line, column,
+                triggerCharacter, currentParameter, currentParameterForSelection, recoverFromPrefix: true);
+        }
+
+        private static SignatureHelpResult GetSignatureHelp(
+            ILanguage language,
+            DomConverter domConverter,
+            string fileName,
+            string textBeforeCaret,
+            int caretOffset,
+            int line,
+            int column,
+            char triggerCharacter,
+            int currentParameter,
+            int currentParameterForSelection,
+            bool recoverFromPrefix)
+        {
             if (language == null)
                 return null;
 
@@ -101,7 +118,7 @@ namespace CodeCompletion
                     signatures = domConverter.GetNameOfMethod(expression, expressionText, line, column,
                         currentParameter, ref defaultIndex, currentParameterForSelection, out parameterCount);
 
-                if ((signatures == null || signatures.Length == 0) && triggerCharacter == '(' &&
+                if (recoverFromPrefix && (signatures == null || signatures.Length == 0) && triggerCharacter == '(' &&
                     ReferenceEquals(language, LanguageProvider.Instance.MainLanguage) &&
                     expression is PascalABCCompiler.SyntaxTree.dot_node)
                 {
@@ -150,6 +167,23 @@ namespace CodeCompletion
             int currentParameter,
             int currentParameterForSelection)
         {
+            return GetSignatureHelpAtCaret(language, domConverter, fileName, textBeforeCaret, caretOffset, line, column,
+                triggerCharacter, currentParameter, currentParameterForSelection, recoverFromPrefix: true);
+        }
+
+        public static SignatureHelpResult GetSignatureHelpAtCaret(
+            ILanguage language,
+            DomConverter domConverter,
+            string fileName,
+            string textBeforeCaret,
+            int caretOffset,
+            int line,
+            int column,
+            char triggerCharacter,
+            int currentParameter,
+            int currentParameterForSelection,
+            bool recoverFromPrefix)
+        {
             if (textBeforeCaret == null)
                 throw new ArgumentNullException(nameof(textBeforeCaret));
             if (caretOffset <= 0 || caretOffset > textBeforeCaret.Length)
@@ -169,7 +203,8 @@ namespace CodeCompletion
                 column,
                 triggerCharacter,
                 currentParameter,
-                currentParameterForSelection);
+                currentParameterForSelection,
+                recoverFromPrefix);
         }
 
         public static bool ShouldClose(string text, int initialOffset, int caretOffset)

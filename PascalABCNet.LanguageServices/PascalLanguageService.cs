@@ -176,7 +176,8 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 {
                     Document = document,
                     IsStale = true,
-                    IsDirty = true
+                    IsDirty = true,
+                    IsCompletionEdit = false
                 };
                 ScheduleAnalysis(document);
             }
@@ -214,23 +215,16 @@ public sealed class PascalLanguageService : IPascalLanguageService
             if (triggeredBySpace && !afterNew)
                 return Array.Empty<CompletionItem>();
 
+            if (currentDocument != null && caretOffset > 0 && caretOffset <= currentDocument.Text.Length &&
+                currentDocument.Text[caretOffset - 1] == '.')
+                return CompleteAfterDot(currentDocument, caretOffset);
+
             var state = GetCompiledState(documentId);
-            bool triedCompletionPrefix = false;
-            // Recover a just-typed incomplete expression for this request only.
             if ((state is null || state.IsStale) &&
-                currentDocument != null && caretOffset > 0 && caretOffset <= currentDocument.Text.Length &&
-                (afterNew || currentDocument.Text[caretOffset - 1] == '.') &&
-                !_controller.PackageRestoreRequired)
+                currentDocument != null && afterNew && !_controller.PackageRestoreRequired)
             {
-                var analysis = afterNew ? currentDocument.Text.Insert(caretOffset, "object") :
-                    currentDocument.Text.Remove(caretOffset - 1, 1).Insert(caretOffset - 1, " ");
+                var analysis = currentDocument.Text.Insert(caretOffset, "object");
                 var recovered = _controller.Compile(currentDocument.FileName, analysis);
-                if (!recovered.is_compiled && !afterNew && !_controller.PackageRestoreRequired)
-                {
-                    triedCompletionPrefix = true;
-                    recovered = _controller.CompileForDotCompletion(currentDocument.FileName,
-                        currentDocument.Text, caretOffset - 1, tryWholeFile: false) ?? recovered;
-                }
                 if (recovered.is_compiled)
                     state = new DocumentState(currentDocument, recovered,
                         GetDirectDependencies(recovered), 0, true, false, null);
@@ -273,12 +267,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 return CreateCompletionItems(items, rootSymbols);
             }
 
-            var afterDot = caretOffset > 0 && text[caretOffset - 1] == '.';
-            var context = new CompletionTriggerContext
-            {
-                DotPressed = afterDot,
-                CtrlSpace = !afterDot
-            };
+            var context = new CompletionTriggerContext { CtrlSpace = true };
             var expressionInfo = CompletionExpressionService.AnalyzeAtCaret(
                 caretOffset,
                 textBeforeCaret,
@@ -296,19 +285,6 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 expressionInfo,
                 items);
 
-            if (afterDot && !triedCompletionPrefix && (symbols is null || symbols.Length == 0) &&
-                !_controller.PackageRestoreRequired)
-            {
-                var recovered = _controller.CompileForDotCompletion(state.Document.FileName,
-                    text, caretOffset - 1, tryWholeFile: false);
-                if (recovered?.is_compiled == true)
-                {
-                    var completionState = state with { DomConverter = recovered };
-                    symbols = GetCompletionSymbols(completionState, position, textBeforeCaret,
-                        caretOffset, context, expressionInfo, items);
-                }
-            }
-
             var completionItems = CreateCompletionItems(items, symbols);
             if (string.IsNullOrEmpty(expressionInfo.Pattern))
                 return completionItems;
@@ -320,6 +296,127 @@ public sealed class PascalLanguageService : IPascalLanguageService
                 .Where(item => item.Label.StartsWith(expressionInfo.Pattern, comparison))
                 .ToArray();
         }, cancellationToken);
+    }
+
+    private IReadOnlyList<CompletionItem> CompleteAfterDot(DocumentSnapshot document, int caretOffset)
+    {
+        var text = document.Text;
+        var dotOffset = caretOffset - 1;
+        var position = TextCoordinates.GetPosition(text, caretOffset);
+        var textBeforeCaret = text[..caretOffset];
+        var context = new CompletionTriggerContext { DotPressed = true };
+        var expressionInfo = CompletionExpressionService.AnalyzeAtCaret(caretOffset, textBeforeCaret,
+            position.Line, position.Character, _language.LanguageIntellisenseSupport, context, KeywordKind.None);
+        var parsed = CompletionExpressionService.Parse(_language.Parser, document.FileName,
+            expressionInfo.ExpressionText, context);
+        if (parsed.ShouldAbortCompletion || parsed.Expression is null)
+            return Array.Empty<CompletionItem>();
+
+        SymInfo[]? FindMembers(DomConverter converter, TextPosition lookupPosition)
+        {
+            var result = CompletionSymbolService.GetSymbols(converter, lookupPosition.Line, lookupPosition.Character,
+                context, _language.CaseSensitive, expressionInfo.ExpressionText,
+                expressionInfo.CtrlOrShiftSpaceAfterDot, expressionInfo.InsidePatternWithDots,
+                expressionInfo.Pattern, parsed.Expression, expressionInfo.Keyword,
+                smartIntellisense: true, namespaceVisibleRange: 0);
+            return result.ShouldAbortCompletion ? null : result.Symbols;
+        }
+
+        var state = GetCompletionModel(document, dotOffset, '.');
+        SymInfo[]? symbols = state is null ? null :
+            FindMembers(state.DomConverter, TextCoordinates.GetPosition(state.AnalyzedText,
+                state.AnalyzedText == text ? caretOffset : dotOffset));
+        if (symbols is not { Length: > 0 } && !packageRestoreRequired.Contains(document.DocumentId))
+        {
+            var prefix = _controller.CompileCompletionPrefix(document.FileName, text, dotOffset);
+            if (prefix?.is_compiled == true)
+            {
+                symbols = FindMembers(prefix, position);
+                if (symbols is not { Length: > 0 } && CodeCompletionController.ApplyDeferredSemanticCorrection(prefix))
+                    symbols = FindMembers(prefix, position);
+            }
+        }
+
+        if (symbols is not { Length: > 0 } && (state is null || state.IsStale))
+        {
+            var full = GetCompiledState(document.DocumentId);
+            if (full is { IsStale: false })
+                symbols = FindMembers(full.DomConverter, position);
+            else if (!packageRestoreRequired.Contains(document.DocumentId))
+            {
+                var analysis = text.Remove(dotOffset, 1).Insert(dotOffset, " ");
+                var recovered = _controller.CompileOpenDocument(document.FileName, analysis, publishModule: false);
+                if (recovered.is_compiled)
+                    symbols = FindMembers(recovered, position);
+            }
+        }
+
+        return CreateCompletionItems(new List<CompletionItem>(), symbols);
+    }
+
+    private DocumentState? GetCompletionModel(DocumentSnapshot document, int triggerOffset, char trigger)
+    {
+        var state = GetCurrentCompletionModel(document.DocumentId);
+        if (state is null)
+            return null;
+        if (state.AnalyzedText != document.Text &&
+            !IsLocalCompletionEdit(state.AnalyzedText, document.Text, triggerOffset, trigger))
+            return null;
+        if (state.IsDirty && !state.IsCompletionEdit)
+        {
+            CancelPendingAnalysis(document.DocumentId);
+            _states[document.DocumentId] = state = state with { IsCompletionEdit = true };
+        }
+        return state;
+    }
+
+    private DocumentState? GetCurrentCompletionModel(string documentId, bool requireCompletionEdit = false)
+    {
+        _controller.RefreshReferenceAssemblies();
+        return _states.TryGetValue(documentId, out var state) &&
+            (!requireCompletionEdit || state.IsCompletionEdit) && CanReuseCompletionModel(state) ? state : null;
+    }
+
+    private bool CanReuseCompletionModel(DocumentState state) =>
+        state.DomConverter.is_compiled && !packageRestoreRequired.Contains(state.Document.DocumentId) &&
+        !_states.Values.Any(other => other.IsDirty && other.Document.DocumentId != state.Document.DocumentId) &&
+        !state.SourceStamps.Any(pair => ReadSourceStamp(pair.Key) != pair.Value);
+
+    private static bool IsLocalCompletionEdit(string analyzed, string current, int triggerOffset, char trigger)
+    {
+        // All text before the receiver's trigger and beyond the edited selector/arguments must agree.
+        if (triggerOffset > analyzed.Length ||
+            !analyzed.AsSpan(0, triggerOffset).SequenceEqual(current.AsSpan(0, triggerOffset)))
+            return false;
+
+        int oldEnd = analyzed.Length;
+        int newEnd = current.Length;
+        while (oldEnd > triggerOffset && newEnd > triggerOffset && analyzed[oldEnd - 1] == current[newEnd - 1])
+        {
+            oldEnd--;
+            newEnd--;
+        }
+
+        return IsCompletionFragment(analyzed.AsSpan(triggerOffset, oldEnd - triggerOffset), trigger) &&
+            IsCompletionFragment(current.AsSpan(triggerOffset, newEnd - triggerOffset), trigger);
+    }
+
+    private static bool IsCompletionFragment(ReadOnlySpan<char> fragment, char trigger)
+    {
+        if (fragment.IsEmpty)
+            return true;
+        if (fragment[0] != trigger)
+            return false;
+        if (trigger == '(')
+        {
+            if (fragment[^1] == ';')
+                fragment = fragment[..^1];
+            return fragment.IndexOfAny('\r', '\n', ';') < 0;
+        }
+        foreach (char ch in fragment)
+            if (ch != '.' && ch != '_' && !char.IsLetterOrDigit(ch))
+                return false;
+        return true;
     }
 
     private IReadOnlyList<CompletionItem> CreateCompletionItems(
@@ -536,7 +633,7 @@ public sealed class PascalLanguageService : IPascalLanguageService
     {
         return ExecuteSerializedAsync<IReadOnlyList<DocumentSymbolInfo>>(() =>
         {
-            var state = GetCompiledState(documentId);
+            var state = GetCurrentCompletionModel(documentId, requireCompletionEdit: true) ?? GetCompiledState(documentId);
             if (state?.DomConverter.visitor.entry_scope is not IInterfaceUnitScope unit)
                 return Array.Empty<DocumentSymbolInfo>();
 
@@ -606,23 +703,39 @@ public sealed class PascalLanguageService : IPascalLanguageService
     {
         return ExecuteSerializedAsync(() =>
         {
-            var state = GetCompiledState(documentId, requireSuccessful: false);
-            if (state is null)
+            if (!Documents.TryGet(documentId, out var document) || document is null)
                 return null;
 
-            var text = state.Document.Text;
+            var text = document.Text;
             var position = TextCoordinates.GetPosition(text, caretOffset);
-            var result = SignatureHelpService.GetSignatureHelpAtCaret(
-                _language,
-                state.DomConverter,
-                state.Document.FileName,
-                text[..caretOffset],
-                caretOffset,
-                position.Line,
-                position.Character,
-                triggerCharacter,
-                currentParameter,
-                currentParameterForSelection);
+            var textBeforeCaret = text[..caretOffset];
+            var openingCall = triggerCharacter == '(' && caretOffset > 0 && text[caretOffset - 1] == '(';
+            SignatureHelpResult? FindSignatures(DomConverter converter) =>
+                SignatureHelpService.GetSignatureHelpAtCaret(_language, converter, document.FileName,
+                    textBeforeCaret, caretOffset, position.Line, position.Character, triggerCharacter,
+                    currentParameter, currentParameterForSelection, recoverFromPrefix: !openingCall);
+
+            var state = openingCall ? GetCompletionModel(document, caretOffset - 1, '(') :
+                GetCompiledState(documentId, requireSuccessful: false);
+            var result = state is null ? null : FindSignatures(state.DomConverter);
+            if (openingCall && result?.Signatures is not { Length: > 0 } &&
+                !packageRestoreRequired.Contains(documentId))
+            {
+                var prefix = _controller.CompileCompletionPrefix(document.FileName, text, caretOffset - 1);
+                if (prefix?.is_compiled == true)
+                {
+                    result = FindSignatures(prefix);
+                    if (result?.Signatures is not { Length: > 0 } &&
+                        CodeCompletionController.ApplyDeferredSemanticCorrection(prefix))
+                        result = FindSignatures(prefix);
+                }
+                if (result?.Signatures is not { Length: > 0 } && (state is null || state.IsStale))
+                {
+                    var full = GetCompiledState(documentId);
+                    if (full is { IsStale: false })
+                        result = FindSignatures(full.DomConverter);
+                }
+            }
 
             if (result?.Signatures is null || result.Signatures.Length == 0)
                 return null;
@@ -1037,6 +1150,9 @@ public sealed class PascalLanguageService : IPascalLanguageService
         bool IsDirty,
         string? LastConversionError)
     {
+        public string AnalyzedText { get; } = Document.Text;
+        public bool IsCompletionEdit { get; init; }
+
         public IReadOnlyDictionary<string, (DateTime Time, long Length)> SourceStamps { get; } =
             Dependencies.Where(path => !string.Equals(path, NormalizeFileName(Document.FileName), StringComparison.OrdinalIgnoreCase))
                 .ToDictionary(path => path, ReadSourceStamp, StringComparer.OrdinalIgnoreCase);

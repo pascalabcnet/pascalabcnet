@@ -102,7 +102,11 @@ namespace Languages.Pascal.Frontend.Wrapping
             if (completionSuffix != null)
             {
                 parser.CompletionClosingTokens = new[] { (int)Tokens.tkRoundClose, (int)Tokens.tkSquareClose,
-                    (int)Tokens.tkEnd, (int)Tokens.tkPoint, (int)Tokens.tkSemiColon };
+                    (int)Tokens.tkEnd, (int)Tokens.tkPoint, (int)Tokens.tkSemiColon,
+#if PABCNET_MODERN
+                    (int)Tokens.tkImplementation,
+#endif
+                };
                 parser.CompletionFinalToken = (int)Tokens.tkPoint;
             }
 
@@ -188,6 +192,7 @@ namespace Languages.Pascal.Frontend.Wrapping
                     case Tokens.tkEnd: completed.Append("end "); break;
                     case Tokens.tkPoint: completed.Append(". "); break;
                     case Tokens.tkSemiColon: completed.Append("; "); break;
+                    case Tokens.tkImplementation: completed.Append("implementation "); break;
                 }
             CompilerDirectives.Clear();
             Warnings.Clear();

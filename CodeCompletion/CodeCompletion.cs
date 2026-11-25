@@ -178,16 +178,16 @@ namespace CodeCompletion
             }
         }
 
-        internal static DomConverter CompileCallPrefix(DomConverter previous, string fileName, string text, int calleeEnd,
-            bool deferSemanticCorrection = false)
+        public DomConverter CompileCompletionPrefix(string fileName, string text, int expressionEnd)
+        {
+            return CompileCallPrefix(this, fileName, text, expressionEnd, deferSemanticCorrection: true);
+        }
+
+        private static DomConverter CompileCallPrefix(CodeCompletionController controller, string fileName, string text,
+            int calleeEnd, bool deferSemanticCorrection)
         {
             if (calleeEnd <= 0 || calleeEnd > text.Length)
                 return null;
-            var controller = previous == null ? new CodeCompletionController() : previous.controller;
-#if PABCNET_MODERN
-            if (controller.PackageRestoreRequired)
-                return null;
-#endif
             lock (compilationLock)
             {
                 var recovered = controller.CompileCore(fileName, text.Substring(0, calleeEnd), ParseMode.CompletionPrefix,
@@ -196,7 +196,18 @@ namespace CodeCompletion
             }
         }
 
-        internal static bool ApplyDeferredSemanticCorrection(DomConverter converter)
+        internal static DomConverter CompileCallPrefix(DomConverter previous, string fileName, string text, int calleeEnd,
+            bool deferSemanticCorrection = false)
+        {
+            var controller = previous == null ? new CodeCompletionController() : previous.controller;
+#if PABCNET_MODERN
+            if (controller.PackageRestoreRequired)
+                return null;
+#endif
+            return CompileCallPrefix(controller, fileName, text, calleeEnd, deferSemanticCorrection);
+        }
+
+        public static bool ApplyDeferredSemanticCorrection(DomConverter converter)
         {
             lock (compilationLock)
                 return converter.ApplyDeferredSemanticCorrection();
