@@ -966,10 +966,8 @@ namespace VisualPascalABC
 
                     ComboBoxItem item = (ComboBoxItem)comboBox.Items[e.Index];
                     var dx = Convert.ToInt32(Math.Round(2 * ScreenScale.Calc()));
-                    e.Graphics.DrawImage(CodeCompletionProvider.ImagesProvider.ImageList.Images[item.IconIndex],
-                         e.Bounds.X + dx, e.Bounds.Y, // + (e.Bounds.Height - CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Height) / 2
-                         e.Bounds.Height, e.Bounds.Height
-                         );
+                    CodeCompletionProvider.ImagesProvider.DrawIcon(e.Graphics, item.IconIndex,
+                        e.Bounds.X + dx, e.Bounds.Y, new Size(e.Bounds.Height, e.Bounds.Height));
                     Rectangle drawingRect = new Rectangle(e.Bounds.X + dx + e.Bounds.Height/*CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Width*/,
                                                           e.Bounds.Y,
                                                           e.Bounds.Width - dx - e.Bounds.Height/*CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Width*/,

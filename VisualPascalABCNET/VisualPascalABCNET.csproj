@@ -648,6 +648,9 @@
     <EmbeddedResource Include="Resources\Icons.16x16.GotoText.png" />
     <EmbeddedResource Include="Resources\Icons.16x16.InternalField.png" />
     <EmbeddedResource Include="Resources\Icons.16x16.UnitNamespace.png" />
+    <EmbeddedResource Include="Resources\IntelliSense128\*.png">
+      <LogicalName>VisualPascalABC.Resources.IntelliSense128.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Icons.16x16.Debug.Break.png" />
     <EmbeddedResource Include="Resources\Icons.16x16.Debug.Continue.png" />
     <EmbeddedResource Include="Resources\Icons.16x16.Debug.StepInto.png" />

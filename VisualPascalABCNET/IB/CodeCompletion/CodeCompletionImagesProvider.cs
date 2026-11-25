@@ -1,6 +1,10 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using PascalABCCompiler.Contracts.CodeCompletion;
 using System.Windows.Forms;
 
@@ -9,6 +13,9 @@ namespace VisualPascalABC
     public class CodeCompletionImagesProvider
     {
         ImageList images = new ImageList();
+        private readonly List<string> resourceNames = new List<string>();
+        private static readonly Dictionary<string, Dictionary<Size, Bitmap>> scaledIcons =
+            new Dictionary<string, Dictionary<Size, Bitmap>>();
         public int IconNumberMethod = -1;
         public int IconNumberField = -1;
         public int IconNumberProperty = -1;
@@ -48,7 +55,54 @@ namespace VisualPascalABC
         int AddImageFromManifestResource(string ResName)
         {
             images.Images.Add(new System.Drawing.Bitmap(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("VisualPascalABC.Resources." + ResName)));
+            resourceNames.Add(ResName);
             return images.Images.Count - 1;
+        }
+
+        internal void DrawIcon(Graphics graphics, int iconIndex, int x, int y, Size size)
+        {
+            if (iconIndex >= resourceNames.Count)
+            {
+                graphics.DrawImage(images.Images[iconIndex], new Rectangle(new Point(x, y), size));
+                return;
+            }
+
+            string name = resourceNames[iconIndex];
+            if (!scaledIcons.TryGetValue(name, out var sizes))
+            {
+                sizes = new Dictionary<Size, Bitmap>();
+                scaledIcons.Add(name, sizes);
+            }
+
+            if (!sizes.TryGetValue(size, out var bitmap))
+            {
+                using (var stream = typeof(CodeCompletionImagesProvider).Assembly
+                    .GetManifestResourceStream("VisualPascalABC.Resources.IntelliSense128." + name))
+                {
+                    if (stream != null)
+                    {
+                        using (var source = new Bitmap(stream))
+                        {
+                            bitmap = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppPArgb);
+                            using (var resized = Graphics.FromImage(bitmap))
+                            using (var attributes = new ImageAttributes())
+                            {
+                                resized.CompositingMode = CompositingMode.SourceCopy;
+                            resized.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                attributes.SetWrapMode(WrapMode.TileFlipXY);
+                                resized.DrawImage(source, new Rectangle(Point.Empty, size),
+                                    0, 0, source.Width, source.Height, GraphicsUnit.Pixel, attributes);
+                            }
+                        }
+                    }
+                }
+                sizes.Add(size, bitmap);
+            }
+
+            if (bitmap == null)
+                graphics.DrawImage(images.Images[iconIndex], new Rectangle(new Point(x, y), size));
+            else
+                graphics.DrawImageUnscaled(bitmap, x, y);
         }
 
         public ImageList ImageList

@@ -423,6 +423,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			float yPos       = 1;
 			float itemHeight = ItemHeight;
             int dfont = Math.Max((int)((itemHeight-Font.Height)/2), 0);
+            var images = externalImages ?? VisualPascalABC.CodeCompletionProvider.ImagesProvider;
 			// Maintain aspect ratio
 			int imageWidth = (int)(itemHeight * imageList.ImageSize.Width / imageList.ImageSize.Height);
 			int curItem = firstItem;
@@ -451,7 +452,11 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					int   xPos   = 0;
                     if (imageExists && completionData[curItem].ImageIndex != -1)
                     {
-						g.DrawImage(imageList.Images[completionData[curItem].ImageIndex], new RectangleF(2, yPos, imageWidth, itemHeight));
+                        int iconIndex = completionData[curItem].ImageIndex;
+                        if (images != null && ReferenceEquals(imageList, images.ImageList))
+                            images.DrawIcon(g, iconIndex, 2, (int)yPos, new Size(imageWidth, (int)itemHeight));
+                        else
+                            g.DrawImage(imageList.Images[iconIndex], new RectangleF(2, yPos, imageWidth, itemHeight));
 						xPos = imageWidth+4;
 					}
 					// draw text
